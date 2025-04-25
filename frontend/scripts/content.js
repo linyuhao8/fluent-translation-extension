@@ -88,6 +88,25 @@
     }
   });
 
+  //檢查選取到的element
+  function findSuitableContainer(node) {
+    const UNSAFE_TAGS = ["A", "BUTTON", "INPUT", "TEXTAREA", "SELECT", "LABEL"];
+    let current = node;
+
+    // 往上找一個合適的元素
+    while (current && current !== document.body) {
+      if (
+        current.nodeType === Node.ELEMENT_NODE &&
+        !UNSAFE_TAGS.includes(current.tagName)
+      ) {
+        return current;
+      }
+      current = current.parentNode;
+    }
+
+    return null;
+  }
+
   //處理APi及插入翻譯框
   async function handleTranslateAndInsert() {
     //先移除舊的翻譯框避免互擾
@@ -111,9 +130,17 @@
     // 檢查是否有選取文字
     if (!selection.isCollapsed) {
       const range = selection.getRangeAt(0);
-      const selectedElement = range.startContainer.parentNode;
 
-      console.log(selectedElement);
+      const rawTarget = range.startContainer.parentNode;
+
+      const selectedElement = findSuitableContainer(rawTarget);
+
+      if (!selectedElement) {
+        console.warn("⚠️ 無法找到適合的插入容器");
+        return;
+      }
+
+      console.log("🧩 插入位置：", selectedElement);
       // 顯示翻譯中狀態
       showTranslationLoading(selectedElement);
 
