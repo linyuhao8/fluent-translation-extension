@@ -85,6 +85,9 @@ app.post("/api/translate", async (req, res) => {
     res.status(500).json({ error: "Translation failed." });
   }
 });
+app.get("/", (req, res) => {
+  res.send("hello world");
+});
 
 // ===== 🟢 啟動伺服器 =====
 const PORT = process.env.PORT || 3000;
