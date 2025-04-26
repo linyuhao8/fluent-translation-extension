@@ -324,6 +324,8 @@
       // 確保先取消任何語音合成
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
+      }
+
       oldTranslation.remove();
     }
 
