@@ -3,49 +3,112 @@
   if (window.fluentQuickAlreadyInjected) return;
   window.fluentQuickAlreadyInjected = true;
 
-  const FluentQuick_LANGUAGES = {
-    zh: {
-      code: "zh-TW",
-      name: "中文",
-      //detect 是一個函數，用來判斷輸入的 text 有多少比例是中文。
-      //然後計算：中文字數 / 整段文字長度，回傳的是 比例（例如 0.8 表示 80% 是中文）
-      detect: (text) => {
-        const chineseChars = text.match(/[\u4e00-\u9fff]/g) || [];
-        return chineseChars.length / text.length;
-      },
-      //threshold（門檻值）：表示只要超過 50% 是中文，就當作這段是中文
-      threshold: 0.5,
-      priority: 2,
+  const fluentquick_languages_data = {
+    zh: { code: "zh-TW", name: "中文", threshold: 0.5, priority: 1 },
+    en: { code: "en", name: "英文", threshold: 0.5, priority: 2 },
+    ja: { code: "ja", name: "日文", threshold: 0.5, priority: 3 },
+    ko: { code: "ko", name: "韓文", threshold: 0.5, priority: 4 },
+    es: { code: "es", name: "西班牙文", threshold: 0.5, priority: 5 },
+    fr: { code: "fr", name: "法文", threshold: 0.5, priority: 6 },
+    de: { code: "de", name: "德文", threshold: 0.5, priority: 7 },
+    ru: { code: "ru", name: "俄文", threshold: 0.5, priority: 8 },
+    it: { code: "it", name: "義大利文", threshold: 0.5, priority: 9 },
+    pt: { code: "pt", name: "葡萄牙文", threshold: 0.5, priority: 10 },
+    vi: { code: "vi", name: "越南文", threshold: 0.5, priority: 11 },
+    th: { code: "th", name: "泰文", threshold: 0.5, priority: 12 },
+    id: { code: "id", name: "印尼文", threshold: 0.5, priority: 13 },
+    tr: { code: "tr", name: "土耳其文", threshold: 0.5, priority: 14 },
+    nl: { code: "nl", name: "荷蘭文", threshold: 0.5, priority: 15 },
+    pl: { code: "pl", name: "波蘭文", threshold: 0.5, priority: 16 },
+    sv: { code: "sv", name: "瑞典文", threshold: 0.5, priority: 17 },
+    uk: { code: "uk", name: "烏克蘭文", threshold: 0.5, priority: 18 },
+    ar: { code: "ar", name: "阿拉伯文", threshold: 0.5, priority: 19 },
+    he: { code: "he", name: "希伯來文", threshold: 0.5, priority: 20 },
+  };
+
+  const fluentquick_languages_detect_functions = {
+    zh: (text) => {
+      const chineseChars = text.match(/[\u4e00-\u9fff]/g) || [];
+      return chineseChars.length / text.length;
     },
-    en: {
-      code: "en",
-      name: "英文",
-      detect: (text) => {
-        const englishChars = text.match(/[a-zA-Z]/g) || [];
-        return englishChars.length / text.length;
-      },
-      threshold: 0.5,
-      priority: 3,
+    en: (text) => {
+      const englishChars = text.match(/[a-zA-Z]/g) || [];
+      return englishChars.length / text.length;
     },
-    ja: {
-      code: "ja",
-      name: "日文",
-      detect: (text) => {
-        const japaneseChars = text.match(/[\u3040-\u30ff\u3400-\u4dbf]/g) || [];
-        return japaneseChars.length / text.length;
-      },
-      threshold: 0.5,
-      priority: 4,
+    ja: (text) => {
+      const japaneseChars = text.match(/[\u3040-\u30ff\u3400-\u4dbf]/g) || [];
+      return japaneseChars.length / text.length;
     },
-    ko: {
-      code: "ko",
-      name: "韓文",
-      detect: (text) => {
-        const koreanChars = text.match(/[\uAC00-\uD7AF]/g) || [];
-        return koreanChars.length / text.length;
-      },
-      threshold: 0.5,
-      priority: 1,
+    ko: (text) => {
+      const koreanChars = text.match(/[\uAC00-\uD7AF]/g) || [];
+      return koreanChars.length / text.length;
+    },
+    es: (text) => {
+      const spanishChars = text.match(/[a-zA-ZñÑáéíóúüÁÉÍÓÚÜ]/g) || [];
+      return spanishChars.length / text.length;
+    },
+    fr: (text) => {
+      const frenchChars = text.match(/[a-zA-Zàâçéèêëîïôûùüÿñæœ]/g) || [];
+      return frenchChars.length / text.length;
+    },
+    de: (text) => {
+      const germanChars = text.match(/[a-zA-ZäöüßÄÖÜẞ]/g) || [];
+      return germanChars.length / text.length;
+    },
+    ru: (text) => {
+      const russianChars = text.match(/[\u0400-\u04FF]/g) || [];
+      return russianChars.length / text.length;
+    },
+    it: (text) => {
+      const italianChars = text.match(/[a-zA-Zàèéìòù]/g) || [];
+      return italianChars.length / text.length;
+    },
+    pt: (text) => {
+      const portugueseChars = text.match(/[a-zA-Záâãàçéêíóôõúü]/g) || [];
+      return portugueseChars.length / text.length;
+    },
+    vi: (text) => {
+      const vietnameseChars =
+        text.match(
+          /[a-zA-Zàáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/g
+        ) || [];
+      return vietnameseChars.length / text.length;
+    },
+    th: (text) => {
+      const thaiChars = text.match(/[\u0E00-\u0E7F]/g) || [];
+      return thaiChars.length / text.length;
+    },
+    id: (text) => {
+      const indonesianChars = text.match(/[a-zA-Z]/g) || [];
+      return indonesianChars.length / text.length;
+    },
+    tr: (text) => {
+      const turkishChars = text.match(/[a-zA-ZçğıöşüÇĞİÖŞÜ]/g) || [];
+      return turkishChars.length / text.length;
+    },
+    nl: (text) => {
+      const dutchChars = text.match(/[a-zA-Zéèëïöü]/g) || [];
+      return dutchChars.length / text.length;
+    },
+    pl: (text) => {
+      const polishChars = text.match(/[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g) || [];
+      return polishChars.length / text.length;
+    },
+    sv: (text) => {
+      const swedishChars = text.match(/[a-zA-ZåäöÅÄÖ]/g) || [];
+      return swedishChars.length / text.length;
+    },
+    uk: (text) => {
+      const ukrainianChars = text.match(/[\u0400-\u04FF]/g) || [];
+      return ukrainianChars.length / text.length;
+    },
+    ar: (text) => {
+      const arabicChars = text.match(/[\u0600-\u06FF]/g) || [];
+      return arabicChars.length / text.length;
+    },
+    he: (text) => {
+      const hebrewChars = text.match(/[\u0590-\u05FF]/g) || [];
+      return hebrewChars.length / text.length;
     },
   };
 
@@ -67,17 +130,22 @@
 
     // 判斷文字是否為空
     if (cleanText.length === 0) {
-      console.log("⚠️ 文字只包含標點符號或數字");
+      console.log("⚠️ Text contains only punctuation or numbers");
       return;
     }
 
     // 偵測原始語言是甚麼
-    const detectionResult = detectLanguage(cleanText);
+    const detectionResult = decideTargetLanguage(
+      cleanText,
+      fluentquick_languages_data,
+      fluentquick_languages_detect_functions
+    );
 
     // 計算優先級
     const priority = getPriority(detectionResult.languageCode);
     currentSourceLanguage = priority[0].code;
     currentTargetLanguage = priority[1].code;
+    console.log(currentSourceLanguage, currentTargetLanguage);
   });
 
   // handle keyboard
@@ -136,21 +204,25 @@
       const selectedElement = findSuitableContainer(rawTarget);
 
       if (!selectedElement) {
-        console.warn("⚠️ 無法找到適合的插入容器");
+        console.warn("⚠️ Unable to find a suitable insertion container");
         return;
       }
 
-      console.log("🧩 插入位置：", selectedElement);
       // 顯示翻譯中狀態
       showTranslationLoading(selectedElement);
 
       // 取得翻譯文本
-      const translatedText = await freeGoogleTranslate(
+      // const translatedText = await freeGoogleTranslate(
+      //   currentSelectedText,
+      //   currentSourceLanguage,
+      //   currentTargetLanguage
+      // );
+
+      const translatedText = await translateText(
         currentSelectedText,
         currentSourceLanguage,
         currentTargetLanguage
       );
-      console.log("🔁 翻譯結果：", translatedText);
 
       // 移除翻譯中顯示
       removeTranslationLoading(selectedElement);
@@ -175,26 +247,27 @@
 
   // 移除標點符號和數字
   function removePunctuationAndNumbers(text) {
-    // 這個正則表達式會移除標點符號和數字，但保留中文、英文字母和空格
+    // 移除所有標點符號、數字，保留 中文、英文、大寫小寫字母 和 空白
     return text
-      .replace(/[^\w\u4e00-\u9fff\s]/g, "")
-      .replace(/\d+/g, "")
+      .replace(/[^\p{L}\p{Script=Han}\s]/gu, "") // 保留所有 Unicode 的字母（Latin, Han等）+空格
       .trim();
   }
 
   // 語言偵測函數 - 回傳最可能的語言和分數
-  function detectLanguage(text) {
+  function decideTargetLanguage(text, languagesData, detectFunctions) {
     let highestScore = 0;
     let detectedLanguage = {
       languageCode: "",
-      languageName: "未知語言",
+      languageName: "Unknown Language",
     };
-    // 計算各語言的分數
-    // 將LNGUAGES解構，方便使用func
-    for (const [langCode, langData] of Object.entries(FluentQuick_LANGUAGES)) {
-      //使用func來計算每個語言的分數
-      const score = langData.detect(text);
-      //計算最高分
+    for (const [langCode, langData] of Object.entries(languagesData)) {
+      //算出每個語言的分數
+      const detectFn = detectFunctions[langCode];
+      if (!detectFn) {
+        console.log(`no detect function: ${langCode}`);
+        continue;
+      }
+      const score = detectFn(text);
       if (score > highestScore) {
         highestScore = score;
         detectedLanguage = {
@@ -204,14 +277,17 @@
       }
     }
 
-    //回傳目前語言分數最多的語言資料
     return detectedLanguage;
   }
 
-  // 根據目標語言做排序
+  // 將原始語言傳入 然後挑選出最高等級的語言作為目標翻譯語言
   function getPriority(sourceLanguage) {
+    //優先級陣列
     priorityArray = [];
-    for (const [langCode, langData] of Object.entries(FluentQuick_LANGUAGES)) {
+    for (const [langCode, langData] of Object.entries(
+      fluentquick_languages_data
+    )) {
+      //使用使用者目前最高等級的語言作為目標語言
       let effectivePriority = langData.priority;
       if (sourceLanguage == langData.code) {
         effectivePriority = 0;
@@ -226,7 +302,7 @@
     return priorityArray;
   }
 
-  // 取得第二高分的語言，可檢查中英混合(未來)
+  // 取得第二高分的語言，可檢查中英混合(未來可新增)
 
   // 插入翻譯結果到選取元素下方
   function insertTranslationUnderTarget(
@@ -318,7 +394,6 @@
     readBtn.classList.add("translation-read-btn");
     readBtn.type = "button";
     readBtn.title = "Read Translation Text";
-    console.log(1, translatedText, translatedCode);
     readBtn.addEventListener("click", () => {
       speechManager.play(
         translatedText,
@@ -354,7 +429,6 @@
     });
 
     //撥放原始
-    console.log(1, currentSelectedText, currentSourceLanguage);
     readSourceBtn.addEventListener("click", () => {
       speechManager.play(
         currentSelectedText,
@@ -611,7 +685,6 @@
         pauseBtn.disabled = true; // 禁用暫停
         readBtn.disabled = false; // 允許繼續操作
         readSourceBtn.disabled = false;
-        console.log("Speech end");
       };
     },
 
@@ -619,14 +692,12 @@
       if (isPlaying) {
         isPlaying = false;
         speechSynthesis.pause();
-        console.log("Speech paused");
         statusText.textContent = "pause";
         playBtn.disabled = false;
         pauseBtn.disabled = true;
         readBtn.disabled = true;
         readSourceBtn.disabled = true;
       }
-      console.log("Speech pause");
     },
 
     resume(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
@@ -634,14 +705,12 @@
         // 檢查語音是否存在
         isPlaying = true;
         speechSynthesis.resume();
-        console.log("Speech resumed");
         statusText.textContent = "resume";
         playBtn.disabled = true; // 禁用播放按鈕
         pauseBtn.disabled = false; // 允許暫停
         readBtn.disabled = true;
         readSourceBtn.disabled = true;
       }
-      console.log("Speech resume");
     },
 
     stop(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
@@ -650,7 +719,6 @@
       statusText.textContent = "stop";
       playBtn.disabled = false; // 允許重新播放
       pauseBtn.disabled = true; // 禁用暫停按鈕
-      console.log("Speech stopped");
     },
   };
 
@@ -665,23 +733,32 @@
   }
 
   async function translateText(text, from = "en", to = "zh-TW") {
-    const response = await fetch(
-      "https://fluent-quick-translation-extension.onrender.com/api/translate",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
+    try {
+      const response = await fetch(
+        "https://fluent-quick-translation-extension.onrender.com/api/translate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    );
 
-    const data = await response.json();
-
-    if (data.translatedText) {
-      return data.translatedText;
-    } else {
-      throw new Error("Translation failed");
+      const data = await response.json();
+      console.log(data);
+      if (data.translatedText) {
+        return data.translatedText;
+      } else {
+        console.log("Translation failed: No translatedText found.");
+      }
+    } catch (error) {
+      console.error("translateText error:", error);
+      return null; // 或者你可以選擇拋出 error，看你要怎麼用
     }
   }
 
