@@ -312,9 +312,23 @@
     currentSelectedText,
     currentSourceLanguage
   ) {
+    // 確保目標元素存在
+    if (!targetEl) {
+      console.log("Target element not found");
+      return null;
+    }
+
     // 如果有舊的翻譯區塊，先移除
     const oldTranslation = targetEl.querySelector(".translation-result");
-    if (oldTranslation) oldTranslation.remove();
+    if (oldTranslation) {
+      // 確保先取消任何語音合成
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      oldTranslation.remove();
+    }
+
+    // 使用文檔片段來提高性能
+    const fragment = document.createDocumentFragment();
 
     // 創建外層容器
     const translationDiv = document.createElement("div");
@@ -324,293 +338,264 @@
     const textBox = document.createElement("div");
     textBox.setAttribute("translate", "translation-text-box");
 
-    // 創建來源文字
+    // 創建來源文字 - 使用安全的文本操作
     const source = document.createElement("div");
     source.classList.add("translate-source");
-    source.textContent = currentSelectedText;
+    source.textContent = currentSelectedText || "";
 
-    // 創建翻譯文字
+    // 創建翻譯文字 - 使用安全的文本操作
     const text = document.createElement("div");
     text.classList.add("translation-text");
-    text.textContent = translatedText;
+    text.textContent = translatedText || "";
 
     // 創建控制按鈕區
     const controls = document.createElement("div");
     controls.classList.add("translation-controls");
 
+    // 建立按鈕函數 - 統一創建按鈕的邏輯
+    const createButton = (className, title, clickHandler) => {
+      const btn = document.createElement("button");
+      btn.classList.add(className);
+      btn.type = "button";
+      btn.title = title;
+      if (clickHandler) {
+        btn.addEventListener("click", clickHandler);
+      }
+      return btn;
+    };
+
     // 建立播放按鈕
-    const playBtn = document.createElement("button");
-    playBtn.classList.add("translation-audioPlay-btn");
-    playBtn.type = "button";
+    const playBtn = createButton("translation-audioPlay-btn", "Play");
     playBtn.textContent = "▶";
     playBtn.disabled = true;
-    playBtn.title = "Play";
 
     // 建立暫停按鈕
-    const pauseBtn = document.createElement("button");
-    pauseBtn.classList.add("translation-audioPause-btn");
-    pauseBtn.type = "button";
+    const pauseBtn = createButton("translation-audioPause-btn", "Pause");
     pauseBtn.textContent = "⏸";
-    pauseBtn.disabled = true; // 預設禁用
-    pauseBtn.title = "Pause";
+    pauseBtn.disabled = true;
 
     // 狀態顯示
-    // 创建一个div容器
     const statusTextBtn = document.createElement("div");
     statusTextBtn.classList.add("status-text-btn");
+    statusTextBtn.innerHTML = `
+    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" class="icon-button">
+      <circle cx="20" cy="20" r="18" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="1"/>
+      <circle cx="20" cy="20" r="8" fill="#888888" class="status-indicator">
+        <animate attributeName="fill" values="#888888;#ff6b6b;#888888" dur="2s" repeatCount="indefinite" id="unplayed-indicator" begin="indefinite"/>
+      </circle>
+    </svg>
+  `;
+    statusTextBtn.title = "Status";
 
-    // 创建SVG代码
-    const svg = `
-  <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" class="icon-button">
-    <!-- 圆形背景 -->
-    <circle cx="20" cy="20" r="18" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="1"/>
-    
-    <!-- 状态指示点 -->
-    <circle cx="20" cy="20" r="8" fill="#888888" class="status-indicator">
-      <animate attributeName="fill" values="#888888;#ff6b6b;#888888" dur="2s" repeatCount="indefinite" id="unplayed-indicator" begin="indefinite"/>
-    </circle>
-    
-  </svg>
-`;
-
-    // 将SVG插入到statusText div中
-    statusTextBtn.innerHTML = svg;
-
-    // 创建一个文本节点并添加到div中
     const statusLabel = document.createElement("span");
     statusLabel.textContent = "unplayed";
     statusLabel.classList.add("status-text");
     statusTextBtn.appendChild(statusLabel);
-    statusTextBtn.title = "Status";
 
-    // 創建朗讀按鈕
-    const readSourceBtn = document.createElement("button");
-    readSourceBtn.classList.add("translation-readSource-btn");
-    readSourceBtn.type = "button";
-    readSourceBtn.title = "Read Source";
-
-    // 創建朗讀按鈕
-    const readBtn = document.createElement("button");
-    readBtn.classList.add("translation-read-btn");
-    readBtn.type = "button";
-    readBtn.title = "Read Translation Text";
-    readBtn.addEventListener("click", () => {
-      speechManager.play(
-        translatedText,
-        translatedCode,
-        playBtn,
-        pauseBtn,
-        statusLabel,
-        readBtn,
-        readSourceBtn
+    // 創建SVG元素的輔助函數
+    const createSvgElement = (type, attributes = {}) => {
+      const element = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        type
       );
-    });
+      Object.entries(attributes).forEach(([key, value]) => {
+        element.setAttribute(key, value);
+      });
+      return element;
+    };
 
-    // 播放按鈕邏輯
-    playBtn.addEventListener("click", () => {
-      speechManager.resume(
-        playBtn,
-        pauseBtn,
-        statusLabel,
-        readBtn,
-        readSourceBtn
-      );
-    });
-
-    // 暫停按鈕邏輯
-    pauseBtn.addEventListener("click", () => {
-      speechManager.pause(
-        playBtn,
-        pauseBtn,
-        statusLabel,
-        readBtn,
-        readSourceBtn
-      );
-    });
-
-    //撥放原始
-    readSourceBtn.addEventListener("click", () => {
-      speechManager.play(
-        currentSelectedText,
-        currentSourceLanguage,
-        playBtn,
-        pauseBtn,
-        statusLabel,
-        readBtn,
-        readSourceBtn
-      );
-    });
-
-    // 創建朗讀按鈕的SVG圖標
-    const readSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
-    );
-    readSvg.setAttribute("viewBox", "0 0 40 40");
-    readSvg.setAttribute("class", "icon-button");
-
-    const readCircle = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "circle"
+    // 創建Read Translation按鈕
+    const readBtn = createButton(
+      "translation-read-btn",
+      "Read Translation Text",
+      () => {
+        if (typeof speechManager !== "undefined") {
+          speechManager.play(
+            translatedText,
+            translatedCode,
+            playBtn,
+            pauseBtn,
+            statusLabel,
+            readBtn,
+            readSourceBtn
+          );
+        }
+      }
     );
 
-    readCircle.setAttribute("cx", "20");
-    readCircle.setAttribute("cy", "20");
-    readCircle.setAttribute("r", "18");
-    readCircle.setAttribute("fill", "#0084ff");
-
-    const readPath1 = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path"
+    const readSvg = createSvgElement("svg", {
+      viewBox: "0 0 40 40",
+      class: "icon-button",
+    });
+    readSvg.appendChild(
+      createSvgElement("circle", {
+        cx: "20",
+        cy: "20",
+        r: "18",
+        fill: "#0084ff",
+      })
     );
-    readPath1.setAttribute("d", "M10,10 L10,30 L20,30 L30,20 L20,10 Z");
-    readPath1.setAttribute("fill", "white");
-
-    const readPath2 = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path"
+    readSvg.appendChild(
+      createSvgElement("path", {
+        d: "M10,10 L10,30 L20,30 L30,20 L20,10 Z",
+        fill: "white",
+      })
     );
-    readPath2.setAttribute("d", "M32,12 A12,12 0 0 1 32,28");
-    readPath2.setAttribute("stroke", "white");
-    readPath2.setAttribute("stroke-width", "2");
-    readPath2.setAttribute("fill", "none");
-
-    readSvg.appendChild(readCircle);
-    readSvg.appendChild(readPath1);
-    readSvg.appendChild(readPath2);
+    readSvg.appendChild(
+      createSvgElement("path", {
+        d: "M32,12 A12,12 0 0 1 32,28",
+        stroke: "white",
+        "stroke-width": "2",
+        fill: "none",
+      })
+    );
 
     readBtn.appendChild(readSvg);
     readBtn.appendChild(document.createTextNode("Read"));
 
-    // 創建朗讀按鈕的SVG圖標
-    const readSourceSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
+    // 創建Read Source按鈕
+    const readSourceBtn = createButton(
+      "translation-readSource-btn",
+      "Read Source",
+      () => {
+        if (typeof speechManager !== "undefined") {
+          speechManager.play(
+            currentSelectedText,
+            currentSourceLanguage,
+            playBtn,
+            pauseBtn,
+            statusLabel,
+            readBtn,
+            readSourceBtn
+          );
+        }
+      }
     );
-    readSourceSvg.setAttribute("viewBox", "0 0 40 40");
-    readSourceSvg.setAttribute("class", "icon-button");
 
-    const readSourceCircle = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "circle"
+    const readSourceSvg = createSvgElement("svg", {
+      viewBox: "0 0 40 40",
+      class: "icon-button",
+    });
+    readSourceSvg.appendChild(
+      createSvgElement("circle", {
+        cx: "20",
+        cy: "20",
+        r: "18",
+        fill: "#0084ff",
+      })
     );
-
-    readSourceCircle.setAttribute("cx", "20");
-    readSourceCircle.setAttribute("cy", "20");
-    readSourceCircle.setAttribute("r", "18");
-    readSourceCircle.setAttribute("fill", "#0084ff");
-
-    const readSourcePath1 = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path"
+    readSourceSvg.appendChild(
+      createSvgElement("path", {
+        d: "M10,10 L10,30 L20,30 L30,20 L20,10 Z",
+        fill: "white",
+      })
     );
-    readSourcePath1.setAttribute("d", "M10,10 L10,30 L20,30 L30,20 L20,10 Z");
-    readSourcePath1.setAttribute("fill", "white");
-
-    const readSourcePath2 = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path"
+    readSourceSvg.appendChild(
+      createSvgElement("path", {
+        d: "M32,12 A12,12 0 0 1 32,28",
+        stroke: "white",
+        "stroke-width": "2",
+        fill: "none",
+      })
     );
-    readSourcePath2.setAttribute("d", "M32,12 A12,12 0 0 1 32,28");
-    readSourcePath2.setAttribute("stroke", "white");
-    readSourcePath2.setAttribute("stroke-width", "2");
-    readSourcePath2.setAttribute("fill", "none");
-
-    readSourceSvg.appendChild(readSourceCircle);
-    readSourceSvg.appendChild(readSourcePath1);
-    readSourceSvg.appendChild(readSourcePath2);
 
     readSourceBtn.appendChild(readSourceSvg);
     readSourceBtn.appendChild(document.createTextNode("ReadSource"));
 
-    // 創建隱藏原文按鈕
-    const toggleSourceBtn = document.createElement("button");
-    toggleSourceBtn.classList.add("translation-toggle-source-btn");
-    toggleSourceBtn.type = "button";
-    toggleSourceBtn.title = "Hide/show Source";
-
-    // 創建隱藏原文按鈕的SVG圖標
-    const toggleSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
-    );
-    toggleSvg.setAttribute("class", "icon-button");
-    toggleSvg.setAttribute("viewBox", "0 0 24 24");
-
-    const togglePath = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path"
-    );
-    togglePath.setAttribute(
-      "d",
-      "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
-    );
-
-    toggleSvg.appendChild(togglePath);
-    toggleSourceBtn.appendChild(toggleSvg);
-    toggleSourceBtn.appendChild(document.createTextNode("display original"));
-    toggleSourceBtn.addEventListener("click", () => {
-      // 這裡添加隱藏/顯示原文的邏輯
-      source.style.display = source.style.display === "none" ? "block" : "none";
+    // 播放按鈕邏輯
+    playBtn.addEventListener("click", () => {
+      if (typeof speechManager !== "undefined") {
+        speechManager.resume(
+          playBtn,
+          pauseBtn,
+          statusLabel,
+          readBtn,
+          readSourceBtn
+        );
+      }
     });
 
-    // 創建關閉按鈕
-    const closeBtn = document.createElement("button");
-    closeBtn.classList.add("translation-close-btn");
-    closeBtn.type = "button";
-    closeBtn.title = "Close";
+    // 暫停按鈕邏輯
+    pauseBtn.addEventListener("click", () => {
+      if (typeof speechManager !== "undefined") {
+        speechManager.pause(
+          playBtn,
+          pauseBtn,
+          statusLabel,
+          readBtn,
+          readSourceBtn
+        );
+      }
+    });
 
-    // 創建關閉按鈕的SVG圖標
-    const closeSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
+    // 創建Toggle Source按鈕
+    const toggleSourceBtn = createButton(
+      "translation-toggle-source-btn",
+      "Hide/show Source",
+      () => {
+        source.style.display =
+          source.style.display === "none" ? "block" : "none";
+      }
     );
-    closeSvg.setAttribute("viewBox", "0 0 40 40");
-    closeSvg.setAttribute("class", "icon-button");
 
-    const closeCircle = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "circle"
+    const toggleSvg = createSvgElement("svg", {
+      class: "icon-button",
+      viewBox: "0 0 24 24",
+    });
+    toggleSvg.appendChild(
+      createSvgElement("path", {
+        d: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z",
+      })
     );
-    closeCircle.setAttribute("cx", "20");
-    closeCircle.setAttribute("cy", "20");
-    closeCircle.setAttribute("r", "18");
-    closeCircle.setAttribute("fill", "#ff4d4f");
 
-    const closeLine1 = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "line"
+    toggleSourceBtn.appendChild(toggleSvg);
+    toggleSourceBtn.appendChild(document.createTextNode("display original"));
+
+    // 創建Close按鈕
+    const closeBtn = createButton("translation-close-btn", "Close", () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      translationDiv.remove();
+    });
+
+    const closeSvg = createSvgElement("svg", {
+      viewBox: "0 0 40 40",
+      class: "icon-button",
+    });
+    closeSvg.appendChild(
+      createSvgElement("circle", {
+        cx: "20",
+        cy: "20",
+        r: "18",
+        fill: "#ff4d4f",
+      })
     );
-    closeLine1.setAttribute("x1", "12");
-    closeLine1.setAttribute("y1", "12");
-    closeLine1.setAttribute("x2", "28");
-    closeLine1.setAttribute("y2", "28");
-    closeLine1.setAttribute("stroke", "white");
-    closeLine1.setAttribute("stroke-width", "3");
-    closeLine1.setAttribute("stroke-linecap", "round");
-
-    const closeLine2 = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "line"
+    closeSvg.appendChild(
+      createSvgElement("line", {
+        x1: "12",
+        y1: "12",
+        x2: "28",
+        y2: "28",
+        stroke: "white",
+        "stroke-width": "3",
+        "stroke-linecap": "round",
+      })
     );
-    closeLine2.setAttribute("x1", "28");
-    closeLine2.setAttribute("y1", "12");
-    closeLine2.setAttribute("x2", "12");
-    closeLine2.setAttribute("y2", "28");
-    closeLine2.setAttribute("stroke", "white");
-    closeLine2.setAttribute("stroke-width", "3");
-    closeLine2.setAttribute("stroke-linecap", "round");
-
-    closeSvg.appendChild(closeCircle);
-    closeSvg.appendChild(closeLine1);
-    closeSvg.appendChild(closeLine2);
+    closeSvg.appendChild(
+      createSvgElement("line", {
+        x1: "28",
+        y1: "12",
+        x2: "12",
+        y2: "28",
+        stroke: "white",
+        "stroke-width": "3",
+        "stroke-linecap": "round",
+      })
+    );
 
     closeBtn.appendChild(closeSvg);
     closeBtn.appendChild(document.createTextNode("close"));
-    closeBtn.addEventListener("click", () => {
-      speechSynthesis.cancel();
-      translationDiv.remove();
-    });
 
     // 組合結構
     textBox.appendChild(source);
@@ -626,10 +611,12 @@
 
     translationDiv.appendChild(textBox);
     translationDiv.appendChild(controls);
+    fragment.appendChild(translationDiv);
 
-    // 添加到目標元素
-    targetEl.appendChild(translationDiv);
+    // 添加到目標元素 - 使用文檔片段提高性能
+    targetEl.appendChild(fragment);
 
+    // 返回創建的翻譯元素，便於後續操作
     return translationDiv;
   }
 
@@ -746,7 +733,7 @@
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.log(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -757,7 +744,7 @@
         console.log("Translation failed: No translatedText found.");
       }
     } catch (error) {
-      console.error("translateText error:", error);
+      console.log("translateText error:", error);
       return null; // 或者你可以選擇拋出 error，看你要怎麼用
     }
   }
