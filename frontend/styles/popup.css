@@ -54,7 +54,6 @@ li {
   font-size: 14px;
   color: var(--dark-text-secondary);
   position: relative;
-  padding-left: 28px;
   line-height: 1.5;
 }
 
@@ -108,7 +107,7 @@ li {
   padding: 12px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  /* background: linear-gradient(135deg, var(--primary), var(--primary-dark)); */
   color: white;
   font-weight: 600;
   font-size: 14px;

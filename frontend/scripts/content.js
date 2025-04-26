@@ -15,7 +15,7 @@
       },
       //threshold（門檻值）：表示只要超過 50% 是中文，就當作這段是中文
       threshold: 0.5,
-      priority: 1,
+      priority: 2,
     },
     en: {
       code: "en",
@@ -25,7 +25,7 @@
         return englishChars.length / text.length;
       },
       threshold: 0.5,
-      priority: 2,
+      priority: 3,
     },
     ja: {
       code: "ja",
@@ -35,18 +35,18 @@
         return japaneseChars.length / text.length;
       },
       threshold: 0.5,
-      priority: 3,
+      priority: 4,
     },
-    // 可以在此處輕鬆添加其他語言
-    // "ko": {
-    //   code: "ko",
-    //   name: "韓文",
-    //   detect: (text) => {
-    //     const koreanChars = text.match(/[\uAC00-\uD7AF]/g) || [];
-    //     return koreanChars.length / text.length;
-    //   },
-    //   threshold: 0.5
-    // },
+    ko: {
+      code: "ko",
+      name: "韓文",
+      detect: (text) => {
+        const koreanChars = text.match(/[\uAC00-\uD7AF]/g) || [];
+        return koreanChars.length / text.length;
+      },
+      threshold: 0.5,
+      priority: 1,
+    },
   };
 
   //handle mouse select text
@@ -145,8 +145,9 @@
       showTranslationLoading(selectedElement);
 
       // 取得翻譯文本
-      const translatedText = await translateText(
+      const translatedText = await freeGoogleTranslate(
         currentSelectedText,
+        currentSourceLanguage,
         currentTargetLanguage
       );
       console.log("🔁 翻譯結果：", translatedText);
@@ -267,6 +268,7 @@
     playBtn.type = "button";
     playBtn.textContent = "▶";
     playBtn.disabled = true;
+    playBtn.title = "Play";
 
     // 建立暫停按鈕
     const pauseBtn = document.createElement("button");
@@ -274,21 +276,48 @@
     pauseBtn.type = "button";
     pauseBtn.textContent = "⏸";
     pauseBtn.disabled = true; // 預設禁用
+    pauseBtn.title = "Pause";
 
     // 狀態顯示
-    const statusText = document.createElement("span");
-    statusText.textContent = "status：未開始";
-    statusText.classList.add("status-text");
+    // 创建一个div容器
+    const statusTextBtn = document.createElement("div");
+    statusTextBtn.classList.add("status-text-btn");
+
+    // 创建SVG代码
+    const svg = `
+  <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" class="icon-button">
+    <!-- 圆形背景 -->
+    <circle cx="20" cy="20" r="18" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="1"/>
+    
+    <!-- 状态指示点 -->
+    <circle cx="20" cy="20" r="8" fill="#888888" class="status-indicator">
+      <animate attributeName="fill" values="#888888;#ff6b6b;#888888" dur="2s" repeatCount="indefinite" id="unplayed-indicator" begin="indefinite"/>
+    </circle>
+    
+  </svg>
+`;
+
+    // 将SVG插入到statusText div中
+    statusTextBtn.innerHTML = svg;
+
+    // 创建一个文本节点并添加到div中
+    const statusLabel = document.createElement("span");
+    statusLabel.textContent = "unplayed";
+    statusLabel.classList.add("status-text");
+    statusTextBtn.appendChild(statusLabel);
+    statusTextBtn.title = "Status";
 
     // 創建朗讀按鈕
     const readSourceBtn = document.createElement("button");
     readSourceBtn.classList.add("translation-readSource-btn");
     readSourceBtn.type = "button";
+    readSourceBtn.title = "Read Source";
 
     // 創建朗讀按鈕
     const readBtn = document.createElement("button");
     readBtn.classList.add("translation-read-btn");
     readBtn.type = "button";
+    readBtn.title = "Read Translation Text";
     console.log(1, translatedText, translatedCode);
     readBtn.addEventListener("click", () => {
       speechManager.play(
@@ -296,7 +325,7 @@
         translatedCode,
         playBtn,
         pauseBtn,
-        statusText,
+        statusLabel,
         readBtn,
         readSourceBtn
       );
@@ -307,7 +336,7 @@
       speechManager.resume(
         playBtn,
         pauseBtn,
-        statusText,
+        statusLabel,
         readBtn,
         readSourceBtn
       );
@@ -318,7 +347,7 @@
       speechManager.pause(
         playBtn,
         pauseBtn,
-        statusText,
+        statusLabel,
         readBtn,
         readSourceBtn
       );
@@ -332,7 +361,7 @@
         currentSourceLanguage,
         playBtn,
         pauseBtn,
-        statusText,
+        statusLabel,
         readBtn,
         readSourceBtn
       );
@@ -424,6 +453,7 @@
     const toggleSourceBtn = document.createElement("button");
     toggleSourceBtn.classList.add("translation-toggle-source-btn");
     toggleSourceBtn.type = "button";
+    toggleSourceBtn.title = "Hide/show Source";
 
     // 創建隱藏原文按鈕的SVG圖標
     const toggleSvg = document.createElementNS(
@@ -454,6 +484,7 @@
     const closeBtn = document.createElement("button");
     closeBtn.classList.add("translation-close-btn");
     closeBtn.type = "button";
+    closeBtn.title = "Close";
 
     // 創建關閉按鈕的SVG圖標
     const closeSvg = document.createElementNS(
@@ -513,11 +544,11 @@
 
     controls.appendChild(playBtn);
     controls.appendChild(pauseBtn);
-    controls.appendChild(statusText);
     controls.appendChild(readBtn);
     controls.appendChild(readSourceBtn);
     controls.appendChild(toggleSourceBtn);
     controls.appendChild(closeBtn);
+    controls.appendChild(statusTextBtn);
 
     translationDiv.appendChild(textBox);
     translationDiv.appendChild(controls);
@@ -564,7 +595,7 @@
       utterance.lang = lang;
 
       // 播放中時，禁用相關按鈕
-      statusText.textContent = "播放中";
+      statusText.textContent = "Playing";
       playBtn.disabled = true;
       pauseBtn.disabled = false;
       readBtn.disabled = true;
@@ -575,8 +606,8 @@
       // 結束後恢復按鈕狀態
       utterance.onend = () => {
         isPlaying = false;
-        statusText.textContent = "狀態：播放結束";
-        playBtn.disabled = false; // 允許播放
+        statusText.textContent = "End";
+        playBtn.disabled = true; // 允許播放
         pauseBtn.disabled = true; // 禁用暫停
         readBtn.disabled = false; // 允許繼續操作
         readSourceBtn.disabled = false;
@@ -589,7 +620,7 @@
         isPlaying = false;
         speechSynthesis.pause();
         console.log("Speech paused");
-        statusText.textContent = "狀態：已暫停";
+        statusText.textContent = "pause";
         playBtn.disabled = false;
         pauseBtn.disabled = true;
         readBtn.disabled = true;
@@ -604,7 +635,7 @@
         isPlaying = true;
         speechSynthesis.resume();
         console.log("Speech resumed");
-        statusText.textContent = "狀態：繼續播放";
+        statusText.textContent = "resume";
         playBtn.disabled = true; // 禁用播放按鈕
         pauseBtn.disabled = false; // 允許暫停
         readBtn.disabled = true;
@@ -616,7 +647,7 @@
     stop(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
       isPlaying = false;
       speechSynthesis.cancel();
-      statusText.textContent = "狀態：已停止";
+      statusText.textContent = "stop";
       playBtn.disabled = false; // 允許重新播放
       pauseBtn.disabled = true; // 禁用暫停按鈕
       console.log("Speech stopped");
@@ -634,13 +665,16 @@
   }
 
   async function translateText(text, from = "en", to = "zh-TW") {
-    const response = await fetch("http://localhost:3000/api/translate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
-    });
+    const response = await fetch(
+      "https://fluent-quick-translation-extension.onrender.com/api/translate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
+      }
+    );
 
     const data = await response.json();
 
@@ -677,10 +711,10 @@
 
   //handle popup setting message
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message === "ping") {
-      sendResponse(true);
-      return true; // 表示將異步回應
-    }
+    // if (message === "ping") {
+    //   sendResponse(true);
+    //   return true; // 表示將異步回應
+    // }
     if (message.action === "changeTranslateionFontSize") {
       const translationDivs = document.querySelectorAll(".translation-text");
 
