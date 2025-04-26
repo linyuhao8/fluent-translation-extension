@@ -1,143 +1,229 @@
+/* 翻譯功能變數 - 使用命名空間避免衝突 */
 :root {
-  --translation-bg: rgba(248, 248, 248, 0.8);
-  --translation-text: #1d1d1f;
-  --btn-radius: 10px;
-  --btn-padding: 3px 12px;
-  --btn-hover-scale: 1.03;
-  --read-text: #333;
-  --btn-bg: white;
-  --btn-border: 1px solid rgb(211, 211, 211);
-  --btn-hover-bg: rgb(243, 243, 243);
-  --border-color: rgb(224, 224, 224);
-  --close-bg: transparent;
-  --close-text: #333;
-  --box-shadow: rgba(0, 0, 0, 0);
-  --btn-border-color: rgb(117, 8, 8);
-  --source-text: rgb(158, 158, 158);
-  --disabled-btn: rgba(0, 0, 0, 0);
+  --translate-ui-bg: rgba(248, 248, 248, 0.8);
+  --translate-ui-text: #1d1d1f;
+  --translate-ui-btn-radius: 10px;
+  --translate-ui-btn-padding: 3px 12px;
+  --translate-ui-btn-hover-scale: 1.03;
+  --translate-ui-read-text: #333;
+  --translate-ui-btn-bg: white;
+  --translate-ui-btn-border: 1px solid rgb(211, 211, 211);
+  --translate-ui-btn-hover-bg: rgb(243, 243, 243);
+  --translate-ui-border-color: rgb(224, 224, 224);
+  --translate-ui-close-bg: transparent;
+  --translate-ui-close-text: #333;
+  --translate-ui-box-shadow: rgba(0, 0, 0, 0);
+  --translate-ui-btn-border-color: rgb(117, 8, 8);
+  --translate-ui-source-text: rgb(158, 158, 158);
+  --translate-ui-disabled-btn: rgba(0, 0, 0, 0);
 }
 
+/* 深色模式變數 */
 @media (prefers-color-scheme: dark) {
   :root {
-    --translation-bg: rgb(50, 51, 48);
-    --translation-text: #f5f5f7;
-    --read-text: #fff;
-    --btn-hover-bg: rgb(77, 77, 77);
-    --btn-bg: rgb(88, 88, 88);
-    --btn-border: none;
-    --border-color: rgb(117, 117, 117);
-    --close-bg: transparent;
-    --close-text: #e5e5ea;
-    --box-shadow: rgba(255, 255, 255, 0.06);
-    --btn-border-color: rgb(73, 73, 73);
-    --source-text: rgb(182, 182, 182);
-    --disabled-btn: rgba(36, 36, 36, 0);
-  }
-  body {
-    background-color: #222;
+    --translate-ui-bg: rgb(50, 51, 48);
+    --translate-ui-text: #f5f5f7;
+    --translate-ui-read-text: #fff;
+    --translate-ui-btn-hover-bg: rgb(77, 77, 77);
+    --translate-ui-btn-bg: rgb(88, 88, 88);
+    --translate-ui-btn-border: none;
+    --translate-ui-border-color: rgb(117, 117, 117);
+    --translate-ui-close-bg: transparent;
+    --translate-ui-close-text: #e5e5ea;
+    --translate-ui-box-shadow: rgba(255, 255, 255, 0.06);
+    --translate-ui-btn-border-color: rgb(73, 73, 73);
+    --translate-ui-source-text: rgb(182, 182, 182);
+    --translate-ui-disabled-btn: rgba(36, 36, 36, 0);
   }
 }
 
+/* 翻譯結果容器 - 使用更具體的選擇器 */
 .translation-result {
-  background-color: var(--translation-bg);
-  color: var(--translation-text);
+  background-color: var(--translate-ui-bg);
+  color: var(--translate-ui-text);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); /* Safari 支援 */
   border-radius: 10px;
   padding: 15px 20px;
   margin-top: 10px;
   display: flex;
   flex-direction: column-reverse;
   gap: 10px;
-  box-shadow: 0 4px 12px var(--box-shadow);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--translate-ui-box-shadow);
+  border: 1px solid var(--translate-ui-border-color);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  z-index: 1000; /* 確保翻譯結果顯示在其他元素之上 */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.translate-source {
+/* 翻譯源文本 */
+.translation-result .translate-source {
   font-size: 14px;
-  color: var(--source-text);
+  color: var(--translate-ui-source-text);
   margin-bottom: 10px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
-.translation-controls {
+/* 翻譯文本 */
+.translation-result .translation-text {
+  font-size: 16px;
+  line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* 控制按鈕區域 */
+.translation-result .translation-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  margin-top: 5px;
 }
 
-/* 通用按鈕 */
-.translation-toggle-source-btn,
-.translation-read-btn,
-.translation-readSource-btn,
-.translation-close-btn,
-.translation-audioPlay-btn,
-.translation-audioPause-btn {
+/* 所有按鈕的共享樣式 */
+.translation-result .translation-toggle-source-btn,
+.translation-result .translation-read-btn,
+.translation-result .translation-readSource-btn,
+.translation-result .translation-close-btn,
+.translation-result .translation-audioPlay-btn,
+.translation-result .translation-audioPause-btn {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 5px;
-  font-size: 15px;
-  border-radius: var(--btn-radius);
-  padding: var(--btn-padding);
+  font-size: 14px;
+  border-radius: var(--translate-ui-btn-radius);
+  padding: var(--translate-ui-btn-padding);
   cursor: pointer;
   transition: all 0.2s ease;
-  border: var(--btn-border);
-  background-color: var(--btn-bg);
-  color: var(--read-text);
+  border: var(--translate-ui-btn-border);
+  background-color: var(--translate-ui-btn-bg);
+  color: var(--translate-ui-read-text);
   user-select: none;
+  white-space: nowrap;
+  min-height: 32px;
+  font-family: inherit;
 }
-.status-text {
+
+/* 狀態文本 */
+.translation-result .status-text {
   display: none;
   cursor: auto;
 }
-.translation-toggle-source-btn:focus,
-.translation-read-btn:focus,
-.translation-readSource-btn:focus,
-.translation-close-btn:focus {
+
+/* 按鈕焦點樣式 */
+.translation-result .translation-toggle-source-btn:focus,
+.translation-result .translation-read-btn:focus,
+.translation-result .translation-readSource-btn:focus,
+.translation-result .translation-close-btn:focus,
+.translation-result .translation-audioPlay-btn:focus,
+.translation-result .translation-audioPause-btn:focus {
   outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 132, 255, 0.3);
 }
 
-.translation-toggle-source-btn:hover,
-.translation-read-btn:hover,
-.translation-readSource-btn:hover,
-.translation-close-btn:hover,
-.translation-audioPlay-btn:hover,
-.translation-audioPause-btn:hover {
-  background-color: var(--btn-hover-bg);
-  transform: scale(var(--btn-hover-scale));
-  transform: translateY(-2px);
+/* 按鈕懸停效果 */
+.translation-result .translation-toggle-source-btn:hover,
+.translation-result .translation-read-btn:hover,
+.translation-result .translation-readSource-btn:hover,
+.translation-result .translation-close-btn:hover,
+.translation-result .translation-audioPlay-btn:hover,
+.translation-result .translation-audioPause-btn:hover {
+  background-color: var(--translate-ui-btn-hover-bg);
+  transform: scale(var(--translate-ui-btn-hover-scale)) translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
-.translation-toggle-source-btn .icon-button,
-.translation-read-btn .icon-button,
-.translation-close-btn .icon-button,
-.translation-readSource-btn .icon-button {
+/* 按鈕圖標 */
+.translation-result .translation-toggle-source-btn .icon-button,
+.translation-result .translation-read-btn .icon-button,
+.translation-result .translation-close-btn .icon-button,
+.translation-result .translation-readSource-btn .icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #0084ff;
   padding: 2px;
-  color: white;
   border: none;
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
-  width: 20px; /* 放大圓圈 */
-  height: 20px; /* 放大圓圈 */
+  width: 20px;
+  height: 20px;
   fill: currentcolor;
+  flex-shrink: 0;
 }
 
-.translation-close-btn .icon-button {
+/* 讀取按鈕專用樣式 */
+.translation-result .translation-read-btn .icon-button,
+.translation-result .translation-readSource-btn .icon-button {
+  background-color: #0084ff;
+  color: white;
+}
+
+/* 關閉按鈕專用樣式 */
+.translation-result .translation-close-btn .icon-button {
   background-color: #ff4d4f;
+  color: white;
 }
 
-button:disabled {
+/* 禁用按鈕樣式 */
+.translation-result button:disabled,
+.translation-result .translation-toggle-source-btn:disabled,
+.translation-result .translation-read-btn:disabled,
+.translation-result .translation-readSource-btn:disabled,
+.translation-result .translation-close-btn:disabled,
+.translation-result .translation-audioPlay-btn:disabled,
+.translation-result .translation-audioPause-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
-  background-color: var(--disabled-btn);
+  background-color: var(--translate-ui-disabled-btn);
   color: #666;
+}
+
+/* 狀態指示器 */
+.translation-result .status-text-btn {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.translation-result .status-text-btn .icon-button {
+  width: 24px;
+  height: 24px;
+}
+
+/* 確保文本區域有適當的換行 */
+.translation-result [translate="translation-text-box"] {
+  width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+  hyphens: auto;
+}
+
+/* 移動設備響應式調整 */
+@media screen and (max-width: 600px) {
+  .translation-result {
+    padding: 12px 15px;
+  }
+  
+  .translation-result .translation-controls {
+    justify-content: center;
+  }
+  
+  .translation-result .translation-toggle-source-btn,
+  .translation-result .translation-read-btn,
+  .translation-result .translation-readSource-btn,
+  .translation-result .translation-close-btn,
+  .translation-result .translation-audioPlay-btn,
+  .translation-result .translation-audioPause-btn {
+    font-size: 13px;
+    padding: 2px 8px;
+  }
 }
