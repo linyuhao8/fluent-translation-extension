@@ -4,7 +4,8 @@
   window.fluentQuickAlreadyInjected = true;
 
   const fluentquick_languages_data = {
-    zh: { code: "zh-TW", name: "中文", threshold: 0.5, priority: 1 },
+    zh: { code: "zh-TW", name: "繁體中文", threshold: 0.5, priority: 1 },
+    zh: { code: "zh-CN", name: "簡體中文", threshold: 0.5, priority: 1 },
     en: { code: "en", name: "英文", threshold: 0.5, priority: 2 },
     ja: { code: "ja", name: "日文", threshold: 0.5, priority: 3 },
     ko: { code: "ko", name: "韓文", threshold: 0.5, priority: 4 },
@@ -27,9 +28,16 @@
   };
 
   const fluentquick_languages_detect_functions = {
-    zh: (text) => {
-      const chineseChars = text.match(/[\u4e00-\u9fff]/g) || [];
-      return chineseChars.length / text.length;
+    // 繁體中文偵測
+    "zh-TW": (text) => {
+      const traditionalSpecific =
+        text.match(/[\u4e00-\u9fff]|[\uF900-\uFAFF]/g) || []; // 加上部分繁體補充區
+      return traditionalSpecific.length / text.length;
+    },
+    // 簡體中文偵測
+    "zh-CN": (text) => {
+      const simplifiedSpecific = text.match(/[\u3400-\u4DBF]/g) || []; // 小範圍補充
+      return simplifiedSpecific.length / text.length;
     },
     en: (text) => {
       const englishChars = text.match(/[a-zA-Z]/g) || [];
