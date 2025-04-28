@@ -3,7 +3,7 @@
   "name": "Text Selector Logger",
   "version": "1.0",
   "description": "快速翻譯擴展，提升您的閱讀體驗,選取文字後印出到 Alt+T或是右鍵翻譯,",
-  "permissions": ["activeTab", "contextMenus", "storage", "scripting"],
+  "permissions": ["tabs","activeTab", "contextMenus", "storage", "scripting"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",
