@@ -216,10 +216,6 @@
     padding: 12px 15px;
   }
 
-  .translation-result .translation-controls {
-    justify-content: center;
-  }
-
   .translation-result .translation-toggle-source-btn,
   .translation-result .translation-read-btn,
   .translation-result .translation-readSource-btn,
