@@ -128,6 +128,265 @@
     },
   };
 
+  // UI object
+  class LoadingManager {
+    constructor() {
+      this.loadingElement = null;
+    }
+
+    // 顯示加載狀態
+    showLoading(targetEl) {
+      // 檢查是否已有加載元素
+      if (this.loadingElement) {
+        return this.loadingElement;
+      }
+      this.loadingElement = document.createElement("div");
+      this.loadingElement.classList.add("loading");
+      this.loadingElement.textContent = "Loading...";
+      this.loadingElement.style.color = "rgb(48, 147, 252)";
+      targetEl.appendChild(this.loadingElement);
+      return this.loadingElement;
+    }
+
+    // 移除加載狀態
+    removeLoading() {
+      if (this.loadingElement) {
+        this.loadingElement.remove();
+        this.loadingElement = null;
+      }
+    }
+  }
+  // SpeechManger
+  class SpeechManager {
+    constructor() {
+      this.isPlaying = false;
+      this.utterance = null;
+    }
+    // Wait for the library to finish loading
+    waitForVoices() {
+      return new Promise((resolve) => {
+        const voices = speechSynthesis.getVoices();
+        if (voices.length) {
+          resolve(voices);
+        } else {
+          // 當語音庫還沒載入時，監聽 onvoiceschanged 事件
+          speechSynthesis.onvoiceschanged = () => {
+            resolve(speechSynthesis.getVoices());
+          };
+        }
+      });
+    }
+    // Play Voice
+    async play(
+      text,
+      lang = "zh-TW",
+      playBtn,
+      pauseBtn,
+      statusText,
+      readBtn,
+      readSourceBtn
+    ) {
+      const voices = await this.waitForVoices();
+      if (!voices || voices.length === 0) {
+        alert(
+          "No voices available. Your browser may not support speech synthesis."
+        );
+        return;
+      }
+      const voice =
+        voices.find((v) => v.lang === lang) ||
+        voices.find((v) => v.lang.startsWith(lang + "-"));
+
+      // 播放語音
+      this.isPlaying = true;
+      this.utterance = new SpeechSynthesisUtterance(text);
+      this.utterance.lang = lang;
+      this.utterance.voice = voice;
+
+      // 播放中時，禁用相關按鈕
+      statusText.textContent = "Playing";
+      playBtn.disabled = true;
+      pauseBtn.disabled = false;
+      readBtn.disabled = true;
+      readSourceBtn.disabled = true;
+
+      speechSynthesis.speak(this.utterance);
+
+      // 結束後恢復按鈕狀態
+      this.utterance.onend = () => {
+        this.isPlaying = false;
+        statusText.textContent = "End";
+        playBtn.disabled = true; // 允許播放
+        pauseBtn.disabled = true; // 禁用暫停
+        readBtn.disabled = false; // 允許繼續操作
+        readSourceBtn.disabled = false;
+      };
+    }
+    // Pause
+    pause(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
+      if (this.isPlaying) {
+        this.isPlaying = false;
+        speechSynthesis.pause();
+        statusText.textContent = "pause";
+        playBtn.disabled = false;
+        pauseBtn.disabled = true;
+        readBtn.disabled = true;
+        readSourceBtn.disabled = true;
+      }
+    }
+    // Resume
+    resume(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
+      if (!this.isPlaying && this.utterance) {
+        // 檢查語音是否存在
+        this.isPlaying = true;
+        speechSynthesis.resume();
+        statusText.textContent = "resume";
+        playBtn.disabled = true; // 禁用播放按鈕
+        pauseBtn.disabled = false; // 允許暫停
+        readBtn.disabled = true;
+        readSourceBtn.disabled = true;
+      }
+    }
+    // Stop
+    stop(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
+      this.isPlaying = false;
+      speechSynthesis.cancel();
+      statusText.textContent = "stop";
+      playBtn.disabled = false; // 允許重新播放
+      pauseBtn.disabled = true; // 禁用暫停按鈕
+    }
+  }
+  // API
+  class TranslatorApi {
+    constructor() {}
+    //google translate api
+    async freeGoogleTranslate(text, from = "en", to = "zh-TW") {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(
+        text
+      )}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data[0].map((part) => part[0]).join("");
+    }
+
+    async translateText(text, from = "en", to = "zh-TW") {
+      try {
+        const response = await fetch(
+          "https://fluent-quick-translation-extension.onrender.com/api/translate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
+          }
+        );
+
+        if (!response.ok) {
+          console.log(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.translatedText) {
+          return data.translatedText;
+        } else {
+          console.log("Translation failed: No translatedText found.");
+        }
+      } catch (error) {
+        console.log("translateText error:", error);
+        return null; // 或者你可以選擇拋出 error，看你要怎麼用
+      }
+    }
+  }
+  // TextUtils
+  class TextUtils {
+    static UNSAFE_TAGS = [
+      "A",
+      "BUTTON",
+      "INPUT",
+      "TEXTAREA",
+      "SELECT",
+      "LABEL",
+    ];
+    // Check the selected element, if it is an interactive element it will return null.
+    static findSuitableContainer(node) {
+      let current = node;
+
+      // Start from the given node and move up the DOM tree
+      while (current && current !== document.body) {
+        // Check if the node is an element and not an interactive (unsafe) tag
+        if (
+          current.nodeType === Node.ELEMENT_NODE && // Ensure it's a valid HTML element
+          !TextUtils.UNSAFE_TAGS.includes(current.tagName) // Skip tags like <a>, <button>, etc.
+        ) {
+          return current; // Found a suitable container
+        }
+
+        // Move up to the parent node and continue the check
+        current = current.parentNode;
+      }
+
+      // If no suitable container is found, return null
+      return null;
+    }
+
+    // Remove punctuation and numbers from text
+    static removePunctuationAndNumbers(text) {
+      // Keep only letters (Latin, Chinese) and spaces
+      return text.replace(/[^\p{L}\p{Script=Han}\s]/gu, "").trim();
+    }
+  }
+  // LanguageUtils
+  class LanguageUtils {
+    // Language Detection Function - Returns the most probable languages and scores.
+    static decideTargetLanguage(text, languagesData, detectFunctions) {
+      let highestScore = 0;
+      let detectedLanguage = {
+        languageCode: "",
+        languageName: "Unknown Language",
+      };
+      for (const [langCode, langData] of Object.entries(languagesData)) {
+        //算出每個語言的分數
+        const detectFn = detectFunctions[langCode];
+        if (!detectFn) {
+          console.log(`no detect function: ${langCode}`);
+          continue;
+        }
+        const score = detectFn(text);
+        if (score > highestScore) {
+          highestScore = score;
+          detectedLanguage = {
+            languageCode: langData.code,
+            languageName: langData.name,
+          };
+        }
+      }
+
+      return detectedLanguage;
+    }
+
+    // Input the original language and select the highest level of user-defined language as the target translation language. return languages sort array
+    static getPriority(sourceLanguage) {
+      //優先級陣列
+      let priorityArray = [];
+      for (const [langCode, langData] of Object.entries(languagesData)) {
+        //使用使用者目前最高等級的語言作為目標語言
+        let effectivePriority = langData.priority;
+        if (sourceLanguage == langData.code) {
+          effectivePriority = 0;
+          console.log(langData.code);
+        }
+        priorityArray.push({
+          code: langData.code,
+          name: langData.name,
+          priority: effectivePriority,
+        });
+      }
+      priorityArray.sort((a, b) => a.priority - b.priority);
+      return priorityArray;
+    }
+  }
+
   // save data to chrome local
   let languagesData = null;
   chrome.storage.local.get("languagesData", (result) => {
@@ -140,6 +399,11 @@
     }
     languagesData = result.languagesData || fluentquick_languages_data;
   });
+
+  // 創建實例
+  const loadingManager = new LoadingManager();
+  const speechManager = new SpeechManager();
+  const translatorAPi = new TranslatorApi();
 
   //handle mouse select text
   let currentSelectedText = "";
@@ -156,10 +420,6 @@
   // ==================================================
   // 🔵 Event Listeners - (Selection, Keydown, Runtime)
   // ==================================================
-  //       \    /\
-  //        )  ( ')
-  //       (  /  )
-  //        \(__)|
 
   // if mouse selection change detection source language and target language
   document.addEventListener("selectionchange", () => {
@@ -172,7 +432,8 @@
     }
 
     // Removes punctuation and numbers, but retains spaces
-    const cleanText = removePunctuationAndNumbers(currentSelectedText);
+    const cleanText =
+      TextUtils.removePunctuationAndNumbers(currentSelectedText);
 
     // Determine if the text is empty, No follow-up
     if (cleanText.length === 0) {
@@ -186,7 +447,7 @@
 
       // Detect original language according to detect function
       // The most likely language code will be returned.
-      const detectionResult = decideTargetLanguage(
+      const detectionResult = LanguageUtils.decideTargetLanguage(
         cleanText,
         languagesData,
         fluentquick_languages_detect_functions
@@ -196,7 +457,7 @@
       // If select content is in your primary language, it will be translated to your secondary language.
       // If select content is in your secondary language, it will be translated to your primary language.
       // If select content is in another language, it will be translated to your primary language.
-      const priority = getPriority(detectionResult.languageCode);
+      const priority = LanguageUtils.getPriority(detectionResult.languageCode);
       currentSourceLanguage = priority[0].code;
       currentTargetLanguage = priority[1].code;
       console.log(currentSourceLanguage, currentTargetLanguage);
@@ -256,10 +517,6 @@
   // =========================
   // 🟠 Sub Functions
   // =========================
-  //       \    /\
-  //        )  ( ')
-  //       (  /  )
-  //        \(__)|
 
   // Handling APi and inserting translation boxes (trigger shortcut keys or right-click to translate).
   async function handleTranslateAndInsert() {
@@ -275,7 +532,7 @@
     if (!selection.isCollapsed) {
       const range = selection.getRangeAt(0);
       const rawTarget = range.startContainer.parentNode;
-      const selectedElement = findSuitableContainer(rawTarget);
+      const selectedElement = TextUtils.findSuitableContainer(rawTarget);
 
       if (!selectedElement) {
         console.log("⚠️ Unable to find a suitable insertion container");
@@ -293,7 +550,8 @@
       }
 
       // loading...
-      showTranslationLoading(selectedElement);
+      loadingManager.showLoading(selectedElement);
+      // showTranslationLoading(selectedElement);
 
       // Test Environment API
       // const translatedText = await freeGoogleTranslate(
@@ -303,14 +561,15 @@
       // );
 
       // Production Environment API
-      const translatedText = await translateText(
+      const translatedText = await translatorAPi.translateText(
         currentSelectedText,
         currentSourceLanguage,
         currentTargetLanguage
       );
 
       // remove loading
-      removeTranslationLoading(selectedElement);
+      loadingManager.removeLoading();
+      // removeTranslationLoading(selectedElement);
 
       // If there is a voice playing, cancel it first.
       if (speechSynthesis.speaking) {
@@ -327,7 +586,8 @@
       );
     }
   }
-  // Insert translation boxes  html
+
+  // Insert translation boxes html
   function insertTranslationUnderTarget(
     targetEl,
     translatedText,
@@ -643,298 +903,5 @@
 
     // 返回創建的翻譯元素，便於後續操作
     return translationDiv;
-  }
-
-  //         |\      _,,,---,,_
-  // ZZZzz /,`.-'`'    -.  ;-;;,_
-  //      |,4-  ) )-,_. ,\ (  `'-'
-  //     '---''(_/--'  `-'\_)
-  // =========================
-  // 🔵 API
-  // =========================
-  //       \    /\
-  //        )  ( ')
-  //       (  /  )
-  //        \(__)|
-
-  //google translate api
-  async function freeGoogleTranslate(text, from = "en", to = "zh-TW") {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(
-      text
-    )}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data[0].map((part) => part[0]).join("");
-  }
-
-  async function translateText(text, from = "en", to = "zh-TW") {
-    try {
-      const response = await fetch(
-        "https://fluent-quick-translation-extension.onrender.com/api/translate",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
-        }
-      );
-
-      if (!response.ok) {
-        console.log(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.translatedText) {
-        return data.translatedText;
-      } else {
-        console.log("Translation failed: No translatedText found.");
-      }
-    } catch (error) {
-      console.log("translateText error:", error);
-      return null; // 或者你可以選擇拋出 error，看你要怎麼用
-    }
-  }
-
-  //         |\      _,,,---,,_
-  // ZZZzz /,`.-'`'    -.  ;-;;,_
-  //      |,4-  ) )-,_. ,\ (  `'-'
-  //     '---''(_/--'  `-'\_)
-  // =========================
-  // 🟠 Translation Related Functions
-  // =========================
-  //       \    /\
-  //        )  ( ')
-  //       (  /  )
-  //        \(__)|
-
-  // Language Detection Function - Returns the most probable languages and scores.
-  function decideTargetLanguage(text, languagesData, detectFunctions) {
-    let highestScore = 0;
-    let detectedLanguage = {
-      languageCode: "",
-      languageName: "Unknown Language",
-    };
-    for (const [langCode, langData] of Object.entries(languagesData)) {
-      //算出每個語言的分數
-      const detectFn = detectFunctions[langCode];
-      if (!detectFn) {
-        console.log(`no detect function: ${langCode}`);
-        continue;
-      }
-      const score = detectFn(text);
-      if (score > highestScore) {
-        highestScore = score;
-        detectedLanguage = {
-          languageCode: langData.code,
-          languageName: langData.name,
-        };
-      }
-    }
-
-    return detectedLanguage;
-  }
-
-  // Input the original language and select the highest level of user-defined language as the target translation language. return languages sort array
-  function getPriority(sourceLanguage) {
-    //優先級陣列
-    priorityArray = [];
-    for (const [langCode, langData] of Object.entries(languagesData)) {
-      //使用使用者目前最高等級的語言作為目標語言
-      let effectivePriority = langData.priority;
-      if (sourceLanguage == langData.code) {
-        effectivePriority = 0;
-        console.log(langData.code);
-      }
-      priorityArray.push({
-        code: langData.code,
-        name: langData.name,
-        priority: effectivePriority,
-      });
-    }
-    priorityArray.sort((a, b) => a.priority - b.priority);
-    return priorityArray;
-  }
-
-  //         |\      _,,,---,,_
-  // ZZZzz /,`.-'`'    -.  ;-;;,_
-  //      |,4-  ) )-,_. ,\ (  `'-'
-  //     '---''(_/--'  `-'\_)
-  // =========================
-  // 🟣 Utility Functions
-  // =========================
-  //       \    /\
-  //        )  ( ')
-  //       (  /  )
-  //        \(__)|
-
-  // Check the selected element, if it is an interactive element it will return null.
-  function findSuitableContainer(node) {
-    const UNSAFE_TAGS = ["A", "BUTTON", "INPUT", "TEXTAREA", "SELECT", "LABEL"];
-    let current = node;
-
-    // 往上找一個合適的元素
-    while (current && current !== document.body) {
-      if (
-        current.nodeType === Node.ELEMENT_NODE &&
-        !UNSAFE_TAGS.includes(current.tagName)
-      ) {
-        return current;
-      }
-      current = current.parentNode;
-    }
-
-    return null;
-  }
-
-  // Remove punctuation and numbers from text
-  function removePunctuationAndNumbers(text) {
-    // Keep only letters (Latin, Chinese) and spaces
-    return text.replace(/[^\p{L}\p{Script=Han}\s]/gu, "").trim();
-  }
-
-  //         |\      _,,,---,,_
-  // ZZZzz /,`.-'`'    -.  ;-;;,_
-  //      |,4-  ) )-,_. ,\ (  `'-'
-  //     '---''(_/--'  `-'\_)
-  // =========================
-  // 🟣 handle speak
-  // =========================
-  //       \    /\
-  //        )  ( ')
-  //       (  /  )
-  //        \(__)|
-
-  let isPlaying = false;
-  let utterance = null; // Move utterance outside so it can be accessed in pause/resume
-
-  function waitForVoices() {
-    return new Promise((resolve) => {
-      const voices = speechSynthesis.getVoices();
-      if (voices.length) {
-        resolve(voices);
-      } else {
-        // 當語音庫還沒載入時，監聽 onvoiceschanged 事件
-        speechSynthesis.onvoiceschanged = () => {
-          resolve(speechSynthesis.getVoices());
-        };
-      }
-    });
-  }
-
-  const speechManager = {
-    async play(
-      text,
-      lang = "zh-TW",
-      playBtn,
-      pauseBtn,
-      statusText,
-      readBtn,
-      readSourceBtn
-    ) {
-      if (!voices || voices.length === 0) {
-        alert(
-          "No voices available. Your browser may not support speech synthesis."
-        );
-        return;
-      }
-      const voices = await waitForVoices();
-
-      console.log(voices);
-      const voice =
-        voices.find((v) => v.lang === lang) ||
-        voices.find((v) => v.lang.startsWith(lang + "-"));
-
-      // 播放語音
-      isPlaying = true;
-      utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang;
-      utterance.voice = voice;
-
-      // 播放中時，禁用相關按鈕
-      statusText.textContent = "Playing";
-      playBtn.disabled = true;
-      pauseBtn.disabled = false;
-      readBtn.disabled = true;
-      readSourceBtn.disabled = true;
-
-      speechSynthesis.speak(utterance);
-
-      // 結束後恢復按鈕狀態
-      utterance.onend = () => {
-        isPlaying = false;
-        statusText.textContent = "End";
-        playBtn.disabled = true; // 允許播放
-        pauseBtn.disabled = true; // 禁用暫停
-        readBtn.disabled = false; // 允許繼續操作
-        readSourceBtn.disabled = false;
-      };
-    },
-
-    pause(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
-      if (isPlaying) {
-        isPlaying = false;
-        speechSynthesis.pause();
-        statusText.textContent = "pause";
-        playBtn.disabled = false;
-        pauseBtn.disabled = true;
-        readBtn.disabled = true;
-        readSourceBtn.disabled = true;
-      }
-    },
-
-    resume(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
-      if (!isPlaying && utterance) {
-        // 檢查語音是否存在
-        isPlaying = true;
-        speechSynthesis.resume();
-        statusText.textContent = "resume";
-        playBtn.disabled = true; // 禁用播放按鈕
-        pauseBtn.disabled = false; // 允許暫停
-        readBtn.disabled = true;
-        readSourceBtn.disabled = true;
-      }
-    },
-
-    stop(playBtn, pauseBtn, statusText, readBtn, readSourceBtn) {
-      isPlaying = false;
-      speechSynthesis.cancel();
-      statusText.textContent = "stop";
-      playBtn.disabled = false; // 允許重新播放
-      pauseBtn.disabled = true; // 禁用暫停按鈕
-    },
-  };
-
-  //         |\      _,,,---,,_
-  // ZZZzz /,`.-'`'    -.  ;-;;,_
-  //      |,4-  ) )-,_. ,\ (  `'-'
-  //     '---''(_/--'  `-'\_)
-  // =========================
-  // 🟣 Loading
-  // =========================
-  //       \    /\
-  //        )  ( ')
-  //       (  /  )
-  //        \(__)|
-
-  //handle loading text
-  function showTranslationLoading(targetEl) {
-    // 先檢查是否已經有 loading 存在
-    let existing = targetEl.querySelector(".translation-loading");
-    if (existing) return existing;
-
-    const loadingDiv = document.createElement("div");
-    loadingDiv.classList.add("translation-loading");
-    loadingDiv.textContent = "In Translation...";
-    loadingDiv.style.color = "rgb(48, 147, 252)";
-
-    targetEl.appendChild(loadingDiv);
-    return loadingDiv;
-  }
-
-  //remove loading text
-  function removeTranslationLoading(targetEl) {
-    const loadingDiv = targetEl.querySelector(".translation-loading");
-    if (loadingDiv) loadingDiv.remove();
   }
 })();
