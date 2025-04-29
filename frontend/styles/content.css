@@ -162,8 +162,9 @@
 
 /* 讀取按鈕專用樣式 */
 .translation-result .translation-read-btn .icon-button,
-.translation-result .translation-readSource-btn .icon-button {
-  background-color: #0084ff;
+.translation-result .translation-readSource-btn .icon-button,
+.translation-toggle-source-btn .icon-button {
+  background-color: #0084ff ;
   color: white;
 }
 
@@ -190,7 +191,7 @@
 
 /* 狀態指示器 */
 .translation-result .status-text-btn {
-  display: flex;
+  display: none;
   align-items: center;
   margin-left: auto;
 }
