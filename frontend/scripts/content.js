@@ -278,7 +278,7 @@
       const selectedElement = findSuitableContainer(rawTarget);
 
       if (!selectedElement) {
-        console.warn("⚠️ Unable to find a suitable insertion container");
+        console.log("⚠️ Unable to find a suitable insertion container");
         return;
       }
 
@@ -753,7 +753,6 @@
       });
     }
     priorityArray.sort((a, b) => a.priority - b.priority);
-    console.log("array", priorityArray);
     return priorityArray;
   }
 
@@ -833,21 +832,24 @@
       readBtn,
       readSourceBtn
     ) {
-      // 等待語音載入完成
+      if (!voices || voices.length === 0) {
+        alert(
+          "No voices available. Your browser may not support speech synthesis."
+        );
+        return;
+      }
       const voices = await waitForVoices();
-      if (!voices) {
-        alert("Voice not yet loaded");
-      }
-      const voice = voices.find((v) => v.lang === lang);
-      if (!voice) {
-        alert("Your browser does not support this language.");
-        return "Your browser does not support this language.";
-      }
+
+      console.log(voices);
+      const voice =
+        voices.find((v) => v.lang === lang) ||
+        voices.find((v) => v.lang.startsWith(lang + "-"));
 
       // 播放語音
       isPlaying = true;
       utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang;
+      utterance.voice = voice;
 
       // 播放中時，禁用相關按鈕
       statusText.textContent = "Playing";
@@ -935,5 +937,4 @@
     const loadingDiv = targetEl.querySelector(".translation-loading");
     if (loadingDiv) loadingDiv.remove();
   }
-
 })();
