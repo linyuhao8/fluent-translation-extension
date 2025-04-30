@@ -289,8 +289,6 @@
         const data = await response.json();
         if (data.translatedText) {
           return data.translatedText;
-        } else {
-          console.log("Translation failed: No translatedText found.");
         }
       } catch (error) {
         console.log("translateText error:", error);
@@ -457,27 +455,33 @@
       return;
     }
 
-    // Access to up-to-date language information (priority will change depending on the type of language selected)
-    chrome.storage.local.get("languagesData", (result) => {
-      languagesData = result.languagesData || fluentquick_languages_data;
+    try {
+      // Access to up-to-date language information (priority will change depending on the type of language selected)
+      chrome.storage.local.get("languagesData", (result) => {
+        languagesData = result.languagesData || fluentquick_languages_data;
 
-      // Detect original language according to detect function
-      // The most likely language code will be returned.
-      const detectionResult = LanguageUtils.decideTargetLanguage(
-        cleanText,
-        languagesData,
-        fluentquick_languages_detect_functions
-      );
+        // Detect original language according to detect function
+        // The most likely language code will be returned.
+        const detectionResult = LanguageUtils.decideTargetLanguage(
+          cleanText,
+          languagesData,
+          fluentquick_languages_detect_functions
+        );
 
-      // Use detectionResult to calculate the target language ranking of current users
-      // If select content is in your primary language, it will be translated to your secondary language.
-      // If select content is in your secondary language, it will be translated to your primary language.
-      // If select content is in another language, it will be translated to your primary language.
-      const priority = LanguageUtils.getPriority(detectionResult.languageCode);
-      currentSourceLanguage = priority[0].code;
-      currentTargetLanguage = priority[1].code;
-      console.log(currentSourceLanguage, currentTargetLanguage);
-    });
+        // Use detectionResult to calculate the target language ranking of current users
+        // If select content is in your primary language, it will be translated to your secondary language.
+        // If select content is in your secondary language, it will be translated to your primary language.
+        // If select content is in another language, it will be translated to your primary language.
+        const priority = LanguageUtils.getPriority(
+          detectionResult.languageCode
+        );
+        currentSourceLanguage = priority[0].code;
+        currentTargetLanguage = priority[1].code;
+        console.log(currentSourceLanguage, currentTargetLanguage);
+      });
+    } catch (e) {
+      console.error("Storage access failed:", e);
+    }
   });
 
   // Shortcut Keys handle keyboard
