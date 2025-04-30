@@ -68,10 +68,11 @@ const translate = new Translate({
 });
 
 // ===== 🔵 API 路由 =====
-const MAX_TEXT_LENGTH = 500;
+const MAX_TEXT_LENGTH = 2000;
 
 app.post("/api/translate", async (req, res) => {
   const { text, targetLang = "zh-TW" } = req.body;
+  console.log(text, targetLang);
   if (!text) return res.status(400).json({ error: "Text is required." });
   if (text.length > MAX_TEXT_LENGTH) {
     return res.status(400).json({ error: "Text too long." });
@@ -81,8 +82,9 @@ app.post("/api/translate", async (req, res) => {
     const [translation] = await translate.translate(text, targetLang);
     res.json({ translatedText: translation });
   } catch (error) {
-    console.error("Translation error:", error);
-    res.status(500).json({ error: "Translation failed." });
+    console.log("Translation error:", error);
+    const errorMessage = error.message || "Unknown error";
+    res.status(500).json({ error: errorMessage });
   }
 });
 app.get("/", (req, res) => {
