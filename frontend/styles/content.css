@@ -1,5 +1,5 @@
 /* 翻譯功能變數 - 使用命名空間避免衝突 */
-:root {
+.translation-result {
   --translate-ui-bg: rgba(248, 248, 248, 0.8);
   --translate-ui-text: #1d1d1f;
   --translate-ui-btn-radius: 10px;
@@ -20,7 +20,7 @@
 
 /* 深色模式變數 */
 @media (prefers-color-scheme: dark) {
-  :root {
+  .translation-result {
     --translate-ui-bg: rgb(50, 51, 48);
     --translate-ui-text: #f5f5f7;
     --translate-ui-read-text: #fff;
@@ -164,7 +164,7 @@
 .translation-result .translation-read-btn .icon-button,
 .translation-result .translation-readSource-btn .icon-button,
 .translation-toggle-source-btn .icon-button {
-  background-color: #0084ff ;
+  background-color: #0084ff;
   color: white;
 }
 
