@@ -482,9 +482,13 @@
 
   // Shortcut Keys handle keyboard
   document.addEventListener("keydown", async (e) => {
-    // click t to translate
-    if (e.key === "t" && e.key === "T" && e.altKey && currentSelectedText) {
-      handleTranslateAndInsert();
+    // 注意大小寫：是 "KeyT" 而不是 "keyT"
+    if (e.code === "KeyT" && e.altKey && currentSelectedText) {
+      try {
+        await handleTranslateAndInsert();
+      } catch (err) {
+        console.error("Shortcut translation error:", err);
+      }
     }
   });
 
