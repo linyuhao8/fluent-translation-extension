@@ -68,7 +68,7 @@ const translate = new Translate({
 });
 
 // ===== 🔵 API 路由 =====
-const MAX_TEXT_LENGTH = 2000;
+const MAX_TEXT_LENGTH = 1000;
 
 app.post("/api/translate", async (req, res) => {
   const { text, targetLang = "zh-TW" } = req.body;

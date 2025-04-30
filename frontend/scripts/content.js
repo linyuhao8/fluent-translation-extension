@@ -428,7 +428,7 @@
   let currentTargetLanguage = ""; //func will handle this
 
   //Front-end and back-end need to be the same
-  const MAX_CHARACTERS = 500;
+  const MAX_CHARACTERS = 1000;
 
   //         |\      _,,,---,,_
   // ZZZzz /,`.-'`'    -.  ;-;;,_
