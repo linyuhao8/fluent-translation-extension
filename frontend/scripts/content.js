@@ -143,7 +143,9 @@
       this.loadingElement = document.createElement("div");
       this.loadingElement.classList.add("loading");
       this.loadingElement.textContent = "Loading...";
-      this.loadingElement.style.color = "rgb(48, 147, 252)";
+      this.loadingElement.style.color = "#333";
+      this.loadingElement.style.backgroundColor = "#00FF4C";
+      this.loadingElement.style.display = "inline-flex";
       targetEl.appendChild(this.loadingElement);
       return this.loadingElement;
     }
@@ -578,7 +580,7 @@
     if (message.action === "updateButtonsPosition") {
       const position = message.position;
       const translationResults = document.querySelectorAll(
-        ".translation-result"
+        ".translation-content"
       );
 
       translationResults.forEach((translationResult) => {
@@ -702,80 +704,112 @@
     const translationDiv = document.createElement("div");
     translationDiv.classList.add("translation-result");
 
+    // 創建標題區域
+    const headerDiv = document.createElement("div");
+    headerDiv.classList.add("translation-header");
+
+    const headerTitle = document.createElement("span");
+    headerTitle.classList.add("translation-header-title");
+    headerTitle.textContent = "Fluent Translate";
+
+    const headerSpan = document.createElement("span");
+    headerSpan.classList.add("translation-header-span");
+    headerSpan.textContent = "Alt+T or Right click";
+
+    headerDiv.appendChild(headerTitle);
+    headerDiv.appendChild(headerSpan);
+
+    // 創建內容區域
+    const contentDiv = document.createElement("div");
+    contentDiv.classList.add("translation-content");
+
     // 創建翻譯文字框
     const textBox = document.createElement("div");
-    textBox.setAttribute("translate", "translation-text-box");
+    textBox.classList.add("translation-text-box");
 
-    // 創建來源文字 - 使用安全的文本操作
+    // 創建來源標題
+    const sourceTitle = document.createElement("p");
+    sourceTitle.classList.add("translate-source-title");
+    sourceTitle.textContent = "Source";
+
+    // 創建來源文字
     const source = document.createElement("div");
     source.classList.add("translate-source");
     source.textContent = currentSelectedText || "";
 
-    // 創建翻譯文字 - 使用安全的文本操作
+    // 創建翻譯標題
+    const translateTitle = document.createElement("p");
+    translateTitle.classList.add("translate-text-title");
+    translateTitle.textContent = "translate";
+
+    // 創建翻譯文字
     const text = document.createElement("div");
     text.classList.add("translation-text");
     text.textContent = translatedText || "";
+
+    // 組織文字框內容
+    textBox.appendChild(sourceTitle);
+    textBox.appendChild(source);
+    textBox.appendChild(translateTitle);
+    textBox.appendChild(text);
 
     // 創建控制按鈕區
     const controls = document.createElement("div");
     controls.classList.add("translation-controls");
 
     // 建立按鈕函數 - 統一創建按鈕的邏輯
-    const createButton = (className, title, clickHandler) => {
+    const createButton = (
+      className,
+      title,
+      iconSrc,
+      buttonText,
+      clickHandler
+    ) => {
       const btn = document.createElement("button");
       btn.classList.add(className);
       btn.type = "button";
       btn.title = title;
+
+      const img = document.createElement("img");
+      img.src = iconSrc;
+      img.alt = "icon";
+      img.classList.add("icon-button");
+
+      btn.appendChild(img);
+
+      if (buttonText) {
+        btn.appendChild(document.createTextNode(buttonText));
+      }
+
       if (clickHandler) {
         btn.addEventListener("click", clickHandler);
       }
+
       return btn;
     };
 
     // 建立播放按鈕
-    const playBtn = createButton("translation-audioPlay-btn", "Play");
-    playBtn.textContent = "▶";
+    const playBtn = createButton(
+      "translation-audioPlay-btn",
+      "Play",
+      chrome.runtime.getURL("icon/Play.svg")
+    );
     playBtn.disabled = true;
 
     // 建立暫停按鈕
-    const pauseBtn = createButton("translation-audioPause-btn", "Pause");
-    pauseBtn.textContent = "⏸";
+    const pauseBtn = createButton(
+      "translation-audioPause-btn",
+      "Pause",
+      chrome.runtime.getURL("icon/Pause.svg")
+    );
     pauseBtn.disabled = true;
 
-    // 狀態顯示
-    const statusTextBtn = document.createElement("div");
-    statusTextBtn.classList.add("status-text-btn");
-    statusTextBtn.innerHTML = `
-    <svg viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" class="icon-button">
-      <circle cx="20" cy="20" r="18" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="1"/>
-      <circle cx="20" cy="20" r="8" fill="#888888" class="status-indicator">
-        <animate attributeName="fill" values="#888888;#ff6b6b;#888888" dur="2s" repeatCount="indefinite" id="unplayed-indicator" begin="indefinite"/>
-      </circle>
-    </svg>
-  `;
-    statusTextBtn.title = "Status";
-
-    const statusLabel = document.createElement("span");
-    statusLabel.textContent = "unplayed";
-    statusLabel.classList.add("status-text");
-    statusTextBtn.appendChild(statusLabel);
-
-    // 創建SVG元素的輔助函數
-    const createSvgElement = (type, attributes = {}) => {
-      const element = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        type
-      );
-      Object.entries(attributes).forEach(([key, value]) => {
-        element.setAttribute(key, value);
-      });
-      return element;
-    };
-
-    // 創建Read Translation按鈕
+    // 建立Read Translation按鈕
     const readBtn = createButton(
       "translation-read-btn",
       "Read Translation Text",
+      chrome.runtime.getURL("icon/Speaker.svg"),
+      "Read",
       () => {
         if (typeof speechManager !== "undefined") {
           speechManager.play(
@@ -791,40 +825,12 @@
       }
     );
 
-    const readSvg = createSvgElement("svg", {
-      viewBox: "0 0 40 40",
-      class: "icon-button",
-    });
-    readSvg.appendChild(
-      createSvgElement("circle", {
-        cx: "20",
-        cy: "20",
-        r: "18",
-        fill: "#0084ff",
-      })
-    );
-    readSvg.appendChild(
-      createSvgElement("path", {
-        d: "M10,10 L10,30 L20,30 L30,20 L20,10 Z",
-        fill: "white",
-      })
-    );
-    readSvg.appendChild(
-      createSvgElement("path", {
-        d: "M32,12 A12,12 0 0 1 32,28",
-        stroke: "white",
-        "stroke-width": "2",
-        fill: "none",
-      })
-    );
-
-    readBtn.appendChild(readSvg);
-    readBtn.appendChild(document.createTextNode("Read"));
-
     // 創建Read Source按鈕
     const readSourceBtn = createButton(
       "translation-readSource-btn",
       "Read Source",
+      chrome.runtime.getURL("icon/Voice.svg"),
+      "ReadSource",
       () => {
         if (typeof speechManager !== "undefined") {
           speechManager.play(
@@ -839,36 +845,6 @@
         }
       }
     );
-
-    const readSourceSvg = createSvgElement("svg", {
-      viewBox: "0 0 40 40",
-      class: "icon-button",
-    });
-    readSourceSvg.appendChild(
-      createSvgElement("circle", {
-        cx: "20",
-        cy: "20",
-        r: "18",
-        fill: "#0084ff",
-      })
-    );
-    readSourceSvg.appendChild(
-      createSvgElement("path", {
-        d: "M10,10 L10,30 L20,30 L30,20 L20,10 Z",
-        fill: "white",
-      })
-    );
-    readSourceSvg.appendChild(
-      createSvgElement("path", {
-        d: "M32,12 A12,12 0 0 1 32,28",
-        stroke: "white",
-        "stroke-width": "2",
-        fill: "none",
-      })
-    );
-
-    readSourceBtn.appendChild(readSourceSvg);
-    readSourceBtn.appendChild(document.createTextNode("ReadSource"));
 
     // 播放按鈕邏輯
     playBtn.addEventListener("click", () => {
@@ -900,85 +876,65 @@
     const toggleSourceBtn = createButton(
       "translation-toggle-source-btn",
       "Hide/show Source",
+      chrome.runtime.getURL("icon/Blind.svg"),
+      "display original",
       () => {
         source.style.display =
           source.style.display === "none" ? "block" : "none";
+        sourceTitle.style.display =
+          sourceTitle.style.display === "none" ? "block" : "none";
       }
     );
-
-    const toggleSvg = createSvgElement("svg", {
-      class: "icon-button",
-      viewBox: "0 0 24 24",
-    });
-    toggleSvg.appendChild(
-      createSvgElement("path", {
-        d: "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z",
-      })
-    );
-
-    toggleSourceBtn.appendChild(toggleSvg);
-    toggleSourceBtn.appendChild(document.createTextNode("display original"));
 
     // 創建Close按鈕
-    const closeBtn = createButton("translation-close-btn", "Close", () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+    const closeBtn = createButton(
+      "translation-close-btn",
+      "Close",
+      chrome.runtime.getURL("icon/Close.svg"),
+      "close",
+      () => {
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+        translationDiv.remove();
       }
-      translationDiv.remove();
-    });
-
-    const closeSvg = createSvgElement("svg", {
-      viewBox: "0 0 40 40",
-      class: "icon-button",
-    });
-    closeSvg.appendChild(
-      createSvgElement("circle", {
-        cx: "20",
-        cy: "20",
-        r: "18",
-        fill: "#ff4d4f",
-      })
-    );
-    closeSvg.appendChild(
-      createSvgElement("line", {
-        x1: "12",
-        y1: "12",
-        x2: "28",
-        y2: "28",
-        stroke: "white",
-        "stroke-width": "3",
-        "stroke-linecap": "round",
-      })
-    );
-    closeSvg.appendChild(
-      createSvgElement("line", {
-        x1: "28",
-        y1: "12",
-        x2: "12",
-        y2: "28",
-        stroke: "white",
-        "stroke-width": "3",
-        "stroke-linecap": "round",
-      })
     );
 
-    closeBtn.appendChild(closeSvg);
-    closeBtn.appendChild(document.createTextNode("close"));
+    // 創建Setting按鈕
+    const settingBtn = createButton(
+      "translation-setting-btn",
+      "Setting",
+      chrome.runtime.getURL("icon/Settings.svg"),
+      "Setting"
+    );
 
-    // 組合結構
-    textBox.appendChild(source);
-    textBox.appendChild(text);
+    // 狀態顯示
+    const statusTextBtn = document.createElement("div");
+    statusTextBtn.classList.add("status-text-btn");
+    statusTextBtn.title = "Status";
 
+    const statusLabel = document.createElement("span");
+    statusLabel.textContent = "unplayed";
+    statusLabel.classList.add("status-text");
+    statusTextBtn.appendChild(statusLabel);
+
+    // 組合控制按鈕
     controls.appendChild(playBtn);
     controls.appendChild(pauseBtn);
     controls.appendChild(readBtn);
     controls.appendChild(readSourceBtn);
     controls.appendChild(toggleSourceBtn);
     controls.appendChild(closeBtn);
+    controls.appendChild(settingBtn);
     controls.appendChild(statusTextBtn);
 
-    translationDiv.appendChild(textBox);
-    translationDiv.appendChild(controls);
+    // 組合整體結構
+    contentDiv.appendChild(textBox);
+    contentDiv.appendChild(controls);
+
+    translationDiv.appendChild(headerDiv);
+    translationDiv.appendChild(contentDiv);
+
     fragment.appendChild(translationDiv);
 
     // 添加到目標元素 - 使用文檔片段提高性能
