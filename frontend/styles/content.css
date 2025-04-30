@@ -39,6 +39,10 @@
 
 /* 翻譯結果容器 - 使用更具體的選擇器 */
 .translation-result {
+  transform: none !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
   background-color: var(--translate-ui-bg);
   -webkit-text-fill-color: var(--translate-ui-text) !important;
   color: var(--translate-ui-text) !important;
@@ -54,30 +58,37 @@
   border: 1px solid var(--translate-ui-border-color);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
-  z-index: 1000; /* 確保翻譯結果顯示在其他元素之上 */
+  z-index: 9999; /* 確保翻譯結果顯示在其他元素之上 */
   max-width: 100%;
   box-sizing: border-box;
+  text-decoration: none;
 }
 
 /* 翻譯源文本 */
 .translation-result .translate-source {
+  position: relative;
   font-size: 14px;
   color: var(--translate-ui-source-text);
   margin-bottom: 10px;
   word-break: break-word;
   overflow-wrap: break-word;
+  text-decoration: none;
 }
 
 /* 翻譯文本 */
 .translation-result .translation-text {
+  position: relative;
   font-size: 16px;
   line-height: 1.5;
   word-break: break-word;
   overflow-wrap: break-word;
+  text-decoration: none;
+  font-weight: 500;
 }
 
 /* 控制按鈕區域 */
 .translation-result .translation-controls {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -96,6 +107,11 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  transform: none !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 9999 !important;
   gap: 5px;
   font-size: 14px;
   border-radius: var(--translate-ui-btn-radius);
@@ -109,10 +125,13 @@
   white-space: nowrap;
   height: auto;
   font-family: inherit;
+  z-index: 9999 !important;
+  text-decoration: none;
 }
 
 /* 狀態文本 */
 .translation-result .status-text {
+  position: relative;
   display: none;
   cursor: auto;
 }
@@ -135,17 +154,23 @@
 .translation-result .translation-close-btn:hover,
 .translation-result .translation-audioPlay-btn:hover,
 .translation-result .translation-audioPause-btn:hover {
+  position: relative;
   background-color: var(--translate-ui-btn-hover-bg);
   transform: scale(var(--translate-ui-btn-hover-scale)) translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
 /* 按鈕圖標 */
-.translation-result .translation-toggle-source-btn .icon-button,
-.translation-result .translation-read-btn .icon-button,
-.translation-result .translation-close-btn .icon-button,
-.translation-result .translation-readSource-btn .icon-button {
+.translation-result .translation-toggle-source-btn svg.icon-button,
+.translation-result .translation-read-btn svg.icon-button,
+.translation-result .translation-close-btn svg.icon-button,
+.translation-result .translation-readSource-btn svg.icon-button {
   display: inline-flex;
+  transform: none !important;
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 9999 !important;
   align-items: center;
   justify-content: center;
   padding: 2px;
@@ -182,6 +207,7 @@
 .translation-result .translation-close-btn:disabled,
 .translation-result .translation-audioPlay-btn:disabled,
 .translation-result .translation-audioPause-btn:disabled {
+  position: relative;
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
