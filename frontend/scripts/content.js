@@ -437,52 +437,111 @@
   // ==================================================
 
   // if mouse selection change detection source language and target language
+  // Add event listener for selection changes
   document.addEventListener("selectionchange", () => {
-    //window selection
+    // Get the current selection
     const selection = window.getSelection();
-    //remove space
+
+    // Get the selected text and trim whitespace
     const text = selection.toString().trim();
+
+    // Only proceed if there's new text selected
     if (text && text !== currentSelectedText) {
       currentSelectedText = text;
-    }
 
-    // Removes punctuation and numbers, but retains spaces
-    const cleanText = TextUtils.sanitizeTextForAPI(currentSelectedText);
+      // Clean the text for language detection (remove punctuation and numbers)
+      const cleanText = TextUtils.sanitizeTextForAPI(currentSelectedText);
 
-    // Determine if the text is empty, No follow-up
-    if (cleanText.length === 0) {
-      console.log("⚠️ Text contains only punctuation or numbers");
-      return;
-    }
+      // Skip processing if text is empty after cleaning
+      if (cleanText.length === 0) {
+        console.log("⚠️ Text contains only punctuation or numbers");
+        return;
+      }
 
-    try {
-      // Access to up-to-date language information (priority will change depending on the type of language selected)
-      chrome.storage.local.get("languagesData", (result) => {
-        languagesData = result.languagesData || fluentquick_languages_data;
+      // Check if Chrome extension context is valid before proceeding
+      if (
+        typeof chrome !== "undefined" &&
+        chrome.runtime &&
+        chrome.runtime.id
+      ) {
+        try {
+          chrome.storage.local.get("languagesData", (result) => {
+            // Handle potential empty result
+            if (chrome.runtime.lastError) {
+              console.log("Storage access error:", chrome.runtime.lastError);
+              useFallbackLanguages(cleanText);
+              return;
+            }
 
-        // Detect original language according to detect function
-        // The most likely language code will be returned.
-        const detectionResult = LanguageUtils.decideTargetLanguage(
-          cleanText,
-          languagesData,
-          fluentquick_languages_detect_functions
-        );
+            // Use stored language data or fall back to default
+            languagesData = result.languagesData || fluentquick_languages_data;
 
-        // Use detectionResult to calculate the target language ranking of current users
-        // If select content is in your primary language, it will be translated to your secondary language.
-        // If select content is in your secondary language, it will be translated to your primary language.
-        // If select content is in another language, it will be translated to your primary language.
-        const priority = LanguageUtils.getPriority(
-          detectionResult.languageCode
-        );
-        currentSourceLanguage = priority[0].code;
-        currentTargetLanguage = priority[1].code;
-        console.log(currentSourceLanguage, currentTargetLanguage);
-      });
-    } catch (e) {
-      console.error("Storage access failed:", e);
+            // Detect language of the selected text
+            const detectionResult = LanguageUtils.decideTargetLanguage(
+              cleanText,
+              languagesData,
+              fluentquick_languages_detect_functions
+            );
+
+            // Determine translation direction based on detected language
+            const priority = LanguageUtils.getPriority(
+              detectionResult.languageCode
+            );
+
+            // Set source and target languages
+            currentSourceLanguage = priority[0].code;
+            currentTargetLanguage = priority[1].code;
+
+            console.log("Detected language:", detectionResult.languageCode);
+            console.log("Source language:", currentSourceLanguage);
+            console.log("Target language:", currentTargetLanguage);
+
+            // Proceed with translation or other actions here
+            processSelectedText(
+              cleanText,
+              currentSourceLanguage,
+              currentTargetLanguage
+            );
+          });
+        } catch (e) {
+          console.log("Storage access failed:", e);
+          useFallbackLanguages(cleanText);
+        }
+      } else {
+        console.log("Chrome extension context is invalid");
+        useFallbackLanguages(cleanText);
+      }
     }
   });
+
+  // Fallback function when storage access fails
+  function useFallbackLanguages(text) {
+    // Use default languages
+    const defaultSourceLang = "en"; // Default source language (e.g., English)
+    const defaultTargetLang = "zh"; // Default target language (e.g., Chinese)
+
+    console.log(
+      "Using fallback languages - Source:",
+      defaultSourceLang,
+      "Target:",
+      defaultTargetLang
+    );
+
+    // Continue with default languages
+    processSelectedText(text, defaultSourceLang, defaultTargetLang);
+  }
+
+  // Process the selected text with the determined languages
+  function processSelectedText(text, sourceLang, targetLang) {
+    // Implement your processing logic here
+    // For example, show translation UI, call translation API, etc.
+    console.log(
+      `Ready to process text from ${sourceLang} to ${targetLang}: "${text.substring(
+        0,
+        50
+      )}${text.length > 50 ? "..." : ""}"`
+    );
+  }
 
   // Shortcut Keys handle keyboard
   document.addEventListener("keydown", async (e) => {
