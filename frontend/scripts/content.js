@@ -330,10 +330,27 @@
       return null;
     }
 
-    // Remove punctuation and numbers from text
-    static removePunctuationAndNumbers(text) {
-      // Keep only letters (Latin, Chinese) and spaces
-      return text.replace(/[^\p{L}\p{Script=Han}\s]/gu, "").trim();
+    static sanitizeTextForAPI(text) {
+      if (!text) return "";
+
+      return (
+        text
+          // 替換非標準引號（中文引號）為標準 ASCII 引號
+          .replace(/[“”]/g, '"')
+          .replace(/[‘’]/g, "'")
+
+          // 移除不可見控制字元 (例如 \u0000 - \u001F)
+          .replace(/[\u0000-\u001F\u007F-\u009F]/g, "")
+
+          // 移除換行與回車
+          .replace(/[\r\n]+/g, " ")
+
+          // 壓縮多個空白為單一空白
+          .replace(/\s+/g, " ")
+
+          // 最後去除首尾空白
+          .trim()
+      );
     }
   }
   // LanguageUtils
@@ -432,8 +449,7 @@
     }
 
     // Removes punctuation and numbers, but retains spaces
-    const cleanText =
-      TextUtils.removePunctuationAndNumbers(currentSelectedText);
+    const cleanText = TextUtils.sanitizeTextForAPI(currentSelectedText);
 
     // Determine if the text is empty, No follow-up
     if (cleanText.length === 0) {
