@@ -1,9 +1,9 @@
 /* 翻譯功能變數 - 使用命名空間避免衝突 */
 .translation-result {
-  --translate-ui-bg: #f5f5f5;
+  --translate-ui-bg: #fff;
   --translate-ui-border: #333;
   --translate-ui-btn-radius: 0px;
-  --translate-ui-btn-padding: 2px 12px;
+  --translate-ui-btn-padding: 7px 12px;
   --translate-ui-btn-hover-scale: 1.03;
   --translate-ui-text: #fff;
   --translate-ui-btn-bg: #111111;
@@ -19,6 +19,7 @@
   --translate-ui-disabled-btn: rgb(71, 71, 71);
   --translate-header-text-color: #fff;
   --translate-header-bg-color: #111111;
+  --translate-header-span-color: #00ff4c;
   --translate-text-box-color: #000;
   --translate-text-box-title-color: #000;
 }
@@ -42,6 +43,7 @@
     --translate-ui-disabled-btn: rgb(71, 71, 71);
     --translate-header-text-color: #111111;
     --translate-header-bg-color: #00ff4c;
+    --translate-header-span-color: #333;
     --translate-text-box-color: #fff;
     --translate-text-box-title-color: #111111;
   }
@@ -62,7 +64,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 4px var(--translate-ui-box-shadow);
-  border: 1px solid var(--translate-ui-border);
+  border: 2px solid var(--translate-ui-border);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
   max-width: 100%;
@@ -78,7 +80,7 @@
   background-color: var(--translate-header-bg-color);
   -webkit-text-fill-color: var(--translate-header-text-color);
   color: var(--translate-header-text-color);
-  padding: 3px 20px;
+  padding: 0px 20px;
 }
 .translation-header-title {
   font-size: 20px;
@@ -86,7 +88,8 @@
 }
 .translation-header-span {
   font-size: 13px;
-  color: #cacaca;
+  color: var(--translate-header-span-color);
+  -webkit-text-fill-color: var(--translate-header-span-color);
 }
 .translation-result .translation-content {
   display: flex;
@@ -113,8 +116,9 @@
   font-family: "Archivo Black", sans-serif !important;
   display: inline-block;
   font-size: 20px;
+  line-height: 1.2;
   background-color: #00ff4c;
-  padding: 0 5px;
+  padding: 0 2px;
   width: auto;
   margin: 0 0 5px 0;
   -webkit-text-fill-color: var(--translate-text-box-title-color);
@@ -160,9 +164,9 @@
 .translation-result .translation-read-btn,
 .translation-result .translation-readSource-btn,
 .translation-result .translation-close-btn,
-.translation-result .translation-setting-btn,
 .translation-result .translation-audioPlay-btn,
-.translation-result .translation-audioPause-btn {
+.translation-result .translation-audioPause-btn,
+.translation-result .translation-setting-link {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -188,6 +192,9 @@
   font-family: inherit;
   text-decoration: none;
 }
+.translation-result .translation-setting-link {
+  padding: 0px 12px;
+}
 
 /* 狀態文本 */
 .translation-result .status-text {
@@ -203,7 +210,7 @@
 .translation-result .translation-close-btn:focus,
 .translation-result .translation-audioPlay-btn:focus,
 .translation-result .translation-audioPause-btn:focus,
-.translation-result .translation-setting-btn:focus {
+.translation-result .translation-setting-link:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 132, 255, 0.3);
 }
@@ -215,7 +222,7 @@
 .translation-result .translation-close-btn:hover,
 .translation-result .translation-audioPlay-btn:hover,
 .translation-result .translation-audioPause-btn:hover,
-.translation-result .translation-setting-btn:hover {
+.translation-result .translation-setting-link:hover {
   -webkit-text-fill-color: var(--translate-ui-btn-hover-text-color);
   color: var(--translate-ui-btn-hover-text-color);
   background-color: var(--translate-ui-btn-hover-bg);
@@ -227,7 +234,7 @@
 .translation-result .translation-read-btn img.icon-button,
 .translation-result .translation-close-btn img.icon-button,
 .translation-result .translation-readSource-btn img.icon-button,
-.translation-result .translation-setting-btn img.icon-button {
+.translation-result a.translation-setting-link img.icon-button {
   background: none !important;
   width: 18px !important;
   height: 18px !important;
@@ -244,7 +251,7 @@
 .translation-result .translation-close-btn:disabled,
 .translation-result .translation-audioPlay-btn:disabled,
 .translation-result .translation-audioPause-btn:disabled,
-.translation-result .translation-setting-btn:disabled {
+.translation-result a.translation-setting-link:disabled {
   position: relative;
   opacity: 0.5;
   cursor: not-allowed;

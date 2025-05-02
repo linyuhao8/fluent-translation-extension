@@ -788,6 +788,38 @@
       return btn;
     };
 
+    const createLink = (
+      className,
+      title,
+      iconSrc,
+      linkText,
+      href,
+      clickHandler
+    ) => {
+      const link = document.createElement("a");
+      link.classList.add(className);
+      link.title = title;
+      link.href = href || "#";
+      link.target = "_blank"; // 可選，若是外部頁面
+
+      const img = document.createElement("img");
+      img.src = iconSrc;
+      img.alt = "icon";
+      img.classList.add("icon-button");
+
+      link.appendChild(img);
+
+      if (linkText) {
+        link.appendChild(document.createTextNode(linkText));
+      }
+
+      if (clickHandler) {
+        link.addEventListener("click", clickHandler);
+      }
+
+      return link;
+    };
+
     // 建立播放按鈕
     const playBtn = createButton(
       "translation-audioPlay-btn",
@@ -900,12 +932,12 @@
       }
     );
 
-    // 創建Setting按鈕
-    const settingBtn = createButton(
-      "translation-setting-btn",
-      "Setting",
-      chrome.runtime.getURL("icon/Settings.svg"),
-      "Setting"
+    const docLink = createLink(
+      "translation-setting-link",
+      "Doc",
+      chrome.runtime.getURL("icon/Book.svg"),
+      "Doc",
+      "chrome-extension://fluent-translate/welcome-en.html"
     );
 
     // 狀態顯示
@@ -925,7 +957,7 @@
     controls.appendChild(readSourceBtn);
     controls.appendChild(toggleSourceBtn);
     controls.appendChild(closeBtn);
-    controls.appendChild(settingBtn);
+    controls.appendChild(docLink);
     controls.appendChild(statusTextBtn);
 
     // 組合整體結構
