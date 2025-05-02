@@ -552,7 +552,7 @@
       try {
         await handleTranslateAndInsert();
       } catch (err) {
-        console.error("Shortcut translation error:", err);
+        console.log("Shortcut translation error:", err);
       }
     }
   });
@@ -740,7 +740,7 @@
     // 創建翻譯標題
     const translateTitle = document.createElement("p");
     translateTitle.classList.add("translate-text-title");
-    translateTitle.textContent = "translate";
+    translateTitle.textContent = "translated";
 
     // 創建翻譯文字
     const text = document.createElement("div");
