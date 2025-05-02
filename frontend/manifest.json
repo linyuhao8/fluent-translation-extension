@@ -1,10 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Text Selector Logger",
+  "name": "Fluent Translate – Read Smarter, Learn Faster",
   "version": "1.0",
-  "description": "快速翻譯擴展，提升您的閱讀體驗,選取文字後印出到 Alt+T或是右鍵翻譯,",
+  "description": "Fluent Translate is a lightweight yet powerful Chrome extension that instantly translates selected text and seamlessly inserts the translation into the webpage without disrupting the layout. With intelligent design and customizable controls, it enhances your reading fluency. Whether you're learning a new language or reading for everyday purposes, its smart interface and user-friendly features help you easily understand every part of the content.",
   "permissions": ["tabs", "activeTab", "contextMenus", "storage", "scripting"],
   "host_permissions": ["<all_urls>"],
+  "icons": {
+    "128": "logo/logo-app.png"
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"
