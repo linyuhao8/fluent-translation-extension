@@ -84,10 +84,11 @@
 }
 .translation-header-title {
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 900;
 }
 .translation-header-span {
   font-size: 13px;
+  font-weight: bold;
   color: var(--translate-header-span-color);
   -webkit-text-fill-color: var(--translate-header-span-color);
 }
@@ -192,9 +193,9 @@
   font-family: inherit;
   text-decoration: none;
 }
-.translation-result .translation-setting-link {
+/* .translation-result .translation-setting-link {
   padding: 0px 12px;
-}
+} */
 
 /* 狀態文本 */
 .translation-result .status-text {
