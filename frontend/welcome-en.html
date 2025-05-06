@@ -14,8 +14,8 @@
           <span>Chrome Extension</span>
           <span>v1.0.0 (Beta)</span>
         </div>
-        <div style="display: flex; gap: 10px">
-          <div style="width: 50px; height: 50px">
+        <div class="header-logo-container">
+          <div class="logo">
             <img
               src="logo/logo-green.svg"
               alt="Logo"
@@ -38,11 +38,103 @@
           </ul>
         </div>
       </div>
-      <div class="circle-badge">Free To use</div>
+      <div class="circle-badge">Free to use</div>
     </header>
 
     <main>
-      <div class="tech-bar">TECHNOLOGY</div>
+      <div class="tech-bar">TUTORIAL</div>
+      <h2 class="tech-title">TUTORIAL</h2>
+      <div class="content-section tutorial-section">
+        <div class="tutorial-step">
+          <div class="step-number">01</div>
+          <div class="step-content">
+            <h3>SELECT TEXT</h3>
+            <p>
+              Highlight any word or paragraph you want to translate on a
+              webpage.
+            </p>
+            <img
+              src="imgs/select-text.gif"
+              alt="Select text example"
+              class="step-image"
+            />
+          </div>
+        </div>
+
+        <div class="tutorial-step">
+          <div class="step-number">02</div>
+          <div class="step-content">
+            <h3>ACTIVATE TRANSLATION</h3>
+            <p>Press Alt+T or use the right-click menu to translate.</p>
+            <p>
+              For the best experience, please use it mainly on article-style
+              pages.
+            </p>
+            <div class="tab">
+              <button class="tablinks" onclick="openCity(event, 'rightclick')">
+                Right + Click
+              </button>
+              <button class="tablinks" onclick="openCity(event, 'altt')">
+                Alt + T
+              </button>
+            </div>
+
+            <div id="rightclick" class="tabcontent">
+              <h3>Right + Click</h3>
+              <img
+                src="imgs/right-click.gif"
+                alt="Activate translation example"
+                class="step-image"
+              />
+            </div>
+            <div id="altt" class="tabcontent">
+              <h3>Alt + T</h3>
+              <img
+                src="imgs/shortcut-key-translate.gif"
+                alt="Activate translation example"
+                class="step-image"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="tutorial-step">
+          <div class="step-number">03</div>
+          <div class="step-content">
+            <h3>Setting</h3>
+            <p>
+              Customize your experience by setting your primary and secondary
+              languages, adjusting font size, and positioning the control
+              buttons — all from the settings panel.
+            </p>
+            <div class="video-container">
+              <video
+                src="imgs/popup-setting.mp4"
+                controls
+                loop
+                muted
+                poster="./imgs/setting-preview.png"
+              ></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="tutorial-step">
+          <div class="step-number">04</div>
+          <div class="step-content">
+            <h3>Mode</h3>
+            <p>Change colors according to your system settings mode</p>
+            <img
+              src="imgs/fluent-translate-Dark-Bright-Mode.jpg"
+              width="100%"
+              height="auto"
+              class="compare-mobile"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="tech-bar">FEATURES</div>
       <div class="">
         <h2 class="tech-title">FEATURES</h2>
 
@@ -57,6 +149,7 @@
             features help you easily understand every part of the content.
             (Currently limited to 1000 words per translation)
           </p>
+
           <div class="feature-grid">
             <div class="feature-item">
               <h3>⚡️ Instant One-Click Translation</h3>
@@ -110,216 +203,43 @@
               </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="tech-bar">TUTORIAL</div>
-      <h2 class="tech-title">TUTORIAL</h2>
-      <div class="content-section tutorial-section">
-        <div class="tutorial-step">
-          <div class="step-number">01</div>
-          <div class="step-content">
-            <h3>SELECT TEXT</h3>
-            <p>
-              Highlight any word or paragraph you want to translate on a
-              webpage.
-            </p>
-            <img
-              src="imgs/select-text.gif"
-              alt="Select text example"
-              class="step-image"
-            />
-          </div>
-        </div>
-
-        <div class="tutorial-step">
-          <div class="step-number">02</div>
-          <div class="step-content">
-            <h3>ACTIVATE TRANSLATION</h3>
-            <p>Press Alt+T or use the right-click menu to translate.</p>
-            <div class="tab">
-              <button class="tablinks" onclick="openCity(event, 'rightclick')">
-                Right + Click
-              </button>
-              <button class="tablinks" onclick="openCity(event, 'altt')">
-                Alt + T
-              </button>
-            </div>
-
-            <div id="rightclick" class="tabcontent">
-              <h3>Right + Click</h3>
-              <img
-                src="imgs/right-click.gif"
-                alt="Activate translation example"
-                class="step-image"
-              />
-            </div>
-            <div id="altt" class="tabcontent">
-              <h3>Alt + T</h3>
-              <img
-                src="imgs/shortcut-key-translate.gif"
-                alt="Activate translation example"
-                class="step-image"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="tutorial-step">
-          <div class="step-number">03</div>
-          <div class="step-content">
-            <h3>Setting</h3>
-            <p>
-              Customize your experience by setting your primary and secondary
-              languages, adjusting font size, and positioning the control
-              buttons — all from the settings panel.
-            </p>
-          </div>
-        </div>
-
-        <div class="tutorial-step">
-          <div class="step-number">04</div>
-          <div class="step-content">
-            <h3>Mode</h3>
-            <p>Change colors according to your system settings mode</p>
-            <img
-              src="imgs/fluent-translate-Dark-Bright-Mode.jpg"
-              width="100%"
-              height="auto"
-              class="compare-mobile"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <h2
-        class="tech-title"
-        style="background-color: #111; width: auto; display: inline-block"
-      >
-        SETTINGS
-      </h2>
-      <div class="tech-bar">SETTINGS</div>
-
-      <div class="language-section">
-        <div class="language-option">
-          <h3><span class="priority-badge">1</span>PRIMARY LANGUAGE</h3>
           <p>
-            Default language for translations when content is in secondary
-            language
+            For the best experience, please use it mainly on article-style
+            pages.
           </p>
-          <select
-            class="language-select-first language-select"
-            id="primary-language"
-          >
-            <option value="">Select Language...</option>
-            <option value="en">English</option>
-            <option value="zh-TW">Traditional Chinese繁體中文</option>
-            <option value="zh-CN">Simplified Chinese簡體中文</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
-            <option value="es">Spanish</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="ru">Russian</option>
-            <option value="it">Italian</option>
-            <option value="pt">Portuguese</option>
-            <option value="vi">Vietnamese</option>
-            <option value="th">Thai</option>
-            <option value="id">Indonesian</option>
-            <option value="tr">Turkish</option>
-            <option value="nl">Dutch</option>
-            <option value="pl">Polish</option>
-            <option value="sv">Swedish</option>
-            <option value="uk">Ukrainian</option>
-            <option value="ar">Arabic</option>
-            <option value="he">Hebrew</option>
-          </select>
-        </div>
 
-        <div class="language-option">
-          <h3><span class="priority-badge">2</span>SECONDARY LANGUAGE</h3>
           <p>
-            Alternative language for translations when content is in primary
-            language
+            Currently, the translation feature is powered by the Google Cloud
+            Translation API, <br />with a limit of 1,000 characters per
+            translation. When the API quota is exceeded, <br />the system will
+            automatically switch to an alternative translation service to ensure
+            continuous functionality.
           </p>
-          <select
-            class="language-select-first language-select"
-            id="secondary-language"
-          >
-            <option value="">Select Language...</option>
-            <option value="en">English</option>
-            <option value="zh-TW">Traditional Chinese繁體中文</option>
-            <option value="zh-CN">Simplified Chinese簡體中文</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
-            <option value="es">Spanish</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="ru">Russian</option>
-            <option value="it">Italian</option>
-            <option value="pt">Portuguese</option>
-            <option value="vi">Vietnamese</option>
-            <option value="th">Thai</option>
-            <option value="id">Indonesian</option>
-            <option value="tr">Turkish</option>
-            <option value="nl">Dutch</option>
-            <option value="pl">Polish</option>
-            <option value="sv">Swedish</option>
-            <option value="uk">Ukrainian</option>
-            <option value="ar">Arabic</option>
-            <option value="he">Hebrew</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="tech-bar">CUSTOMIZATION</div>
-      <div class="customization-section">
-        <div class="input-group">
-          <label>TRANSLATION SIZE</label>
-          <input
-            type="number"
-            id="translation-text-size-input"
-            placeholder="Enter size (px)"
-            min="1"
-            max="100"
-          />
-          <button id="translation-text-size-input-btn">SET</button>
-        </div>
-
-        <div class="input-group">
-          <label>SOURCE TEXT SIZE</label>
-          <input
-            type="number"
-            id="translate-source-size-input"
-            placeholder="Enter size (px)"
-            min="1"
-            max="100"
-          />
-          <button id="translate-source-size-input-btn">SET</button>
-        </div>
-
-        <div class="input-group">
-          <label>BUTTON POSITION</label>
-          <div class="switch-container">
-            <label class="switch">
-              <input type="checkbox" id="buttonsPositionToggle" />
-              <span class="slider round"></span>
-            </label>
-            <span id="positionLabel">TOGGLE POSITION</span>
-          </div>
         </div>
       </div>
     </main>
 
     <footer>
-      <div class="version">Fluent Translate v1.0.0</div>
-      <div>© 2025 - BUILT FOR Hank Lin(Yuhao lin)</div>
-      <a href="https://github.com/linyuhao8">Github</a>
-      <a href="https://www.linkedin.com/in/yuhao-lin-555bb4334/">Linkdin</a>
-      <a href="https://cool-das.com/profile">My UI Profile</a>
+      <div class="footer-content">
+        <p class="footer-description">
+          Hi, I'm Hank — a learner of both English and coding. While reading
+          documentation, I often understand the gist but stumble on a few tricky
+          words or phrases. I needed a seamless way to translate just what I
+          needed, without interrupting my flow — and to hear how it's
+          pronounced, too. That’s why I built this extension: to make reading
+          and learning smoother for people like us. Whether you're learning a
+          language or writing code, every word you grasp and every bug you solve
+          is progress. Keep going — you’re not alone on this journey!
+        </p>
+        <div class="footer-info">
+          <div class="version">Fluent Translate v1.0.0</div>
+          <div>© 2025 - BUILT FOR Hank Lin(Yuhao lin)</div>
+          <a href="mailto:linhao8896@gmail.com">Feedback and suggestions</a>
+          <a href="https://github.com/linyuhao8">Github</a>
+          <a href="https://www.linkedin.com/in/yuhao-lin-555bb4334/">Linkdin</a>
+          <a href="https://cool-das.com/profile">My UI Profile</a>
+        </div>
+      </div>
     </footer>
     <!-- script 放最後 -->
     <script>
