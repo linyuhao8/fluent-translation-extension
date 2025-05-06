@@ -4,162 +4,155 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="/styles/popup.css" />
+    <link rel="stylesheet" href="../styles/welcome.css" />
   </head>
   <body>
     <div class="popup-container">
-      <span class="popup-title">Description</span>
-      <ul class="popup-ul">
-        <li>⚡️ 一鍵翻譯：Alt + T 快速觸發（右鍵選單也可使用）</li>
-        <li>
-          🎯
-          提升閱讀能力：自由選取單字或段落，隨選即翻，專注閱讀不中斷，根據不懂單字進行翻譯
-        </li>
-        <li>✨ 無縫整合：翻譯結果直接嵌入原網頁，保持閱讀流暢性</li>
-        <li>🔊 語音朗讀：使用瀏覽器原生語音引擎，發音自然清晰</li>
-        <li>🍃 輕量設計：簡潔小巧的翻譯視窗，不佔用寶貴的閱讀空間</li>
-        <li>🌐 智能語系偵測：根據常用語言設定優先級（尚未推出）</li>
-      </ul>
-      <span class="popup-title">Language Priority</span>
+      <div class="tech-bar" style="margin-top: 0">SETTINGS</div>
 
-      <div class="language-select-container">
-        <div class="language-explanation">
-          <p>Select your primary and secondary languages for translation:</p>
-          <ul>
-            <li>
-              If content is in your primary language, it will be translated to
-              your secondary language.
-            </li>
-            <li>
-              If content is in your secondary language, it will be translated to
-              your primary language.
-            </li>
-            <li>
-              If content is in another language, it will be translated to your
-              primary language.
-            </li>
-          </ul>
+      <div class="language-section">
+        <div class="language-option">
+          <h3><span class="priority-badge">1</span>PRIMARY LANGUAGE</h3>
+          <p>
+            Default language for translations when content is in secondary
+            language
+          </p>
+          <select
+            class="language-select-first language-select"
+            id="primary-language"
+          >
+            <option value="">Select Language...</option>
+            <option value="en">English</option>
+            <option value="zh-TW">Traditional Chinese繁體中文</option>
+            <option value="zh-CN">Simplified Chinese簡體中文</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="ru">Russian</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="vi">Vietnamese</option>
+            <option value="th">Thai</option>
+            <option value="id">Indonesian</option>
+            <option value="tr">Turkish</option>
+            <option value="nl">Dutch</option>
+            <option value="pl">Polish</option>
+            <option value="sv">Swedish</option>
+            <option value="uk">Ukrainian</option>
+            <option value="ar">Arabic</option>
+            <option value="he">Hebrew</option>
+          </select>
         </div>
 
-        <div class="language-options">
-          <div class="language-section">
-            <label class="language-label"
-              ><span class="priority-indicator">1</span>Primary Language</label
-            >
-            <div class="custom-select">
-              <select
-                class="language-select-first language-select"
-                id="primary-language"
-              >
-                <option value="">Select Language...</option>
-                <option value="en">English</option>
-                <option value="zh-TW">Traditional Chinese繁體中文</option>
-                <option value="zh-CN">Simplified Chinese簡體中文</option>
-                <option value="ja">Japanese</option>
-                <option value="ko">Korean</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="ru">Russian</option>
-                <option value="it">Italian</option>
-                <option value="pt">Portuguese</option>
-                <option value="vi">Vietnamese</option>
-                <option value="th">Thai</option>
-                <option value="id">Indonesian</option>
-                <option value="tr">Turkish</option>
-                <option value="nl">Dutch</option>
-                <option value="pl">Polish</option>
-                <option value="sv">Swedish</option>
-                <option value="uk">Ukrainian</option>
-                <option value="ar">Arabic</option>
-                <option value="he">Hebrew</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="language-section">
-            <label class="language-label"
-              ><span class="priority-indicator">2</span>Secondary
-              Language</label
-            >
-            <div class="custom-select">
-              <select
-                class="language-select-first language-select"
-                id="secondary-language"
-              >
-                <option value="">Select Language...</option>
-                <option value="en">English</option>
-                <option value="zh-TW">Traditional Chinese繁體中文</option>
-                <option value="zh-CN">Simplified Chinese簡體中文</option>
-                <option value="ja">Japanese</option>
-                <option value="ko">Korean</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="ru">Russian</option>
-                <option value="it">Italian</option>
-                <option value="pt">Portuguese</option>
-                <option value="vi">Vietnamese</option>
-                <option value="th">Thai</option>
-                <option value="id">Indonesian</option>
-                <option value="tr">Turkish</option>
-                <option value="nl">Dutch</option>
-                <option value="pl">Polish</option>
-                <option value="sv">Swedish</option>
-                <option value="uk">Ukrainian</option>
-                <option value="ar">Arabic</option>
-                <option value="he">Hebrew</option>
-              </select>
-            </div>
-          </div>
+        <div class="language-option">
+          <h3><span class="priority-badge">2</span>SECONDARY LANGUAGE</h3>
+          <p>
+            Alternative language for translations when content is in primary
+            language
+          </p>
+          <select
+            class="language-select-first language-select"
+            id="secondary-language"
+          >
+            <option value="">Select Language...</option>
+            <option value="en">English</option>
+            <option value="zh-TW">Traditional Chinese繁體中文</option>
+            <option value="zh-CN">Simplified Chinese簡體中文</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="ru">Russian</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="vi">Vietnamese</option>
+            <option value="th">Thai</option>
+            <option value="id">Indonesian</option>
+            <option value="tr">Turkish</option>
+            <option value="nl">Dutch</option>
+            <option value="pl">Polish</option>
+            <option value="sv">Swedish</option>
+            <option value="uk">Ukrainian</option>
+            <option value="ar">Arabic</option>
+            <option value="he">Hebrew</option>
+          </select>
         </div>
       </div>
 
-      <div class="flex-group">
+      <div class="tech-bar">CUSTOMIZATION</div>
+      <div class="customization-section">
         <div class="input-group">
-          <label class="input-label popup-title">trabslation text size</label>
+          <label>TRANSLATION SIZE</label>
           <input
             type="number"
             id="translation-text-size-input"
-            class="styled-input"
-            placeholder="enter nunber(px)"
+            placeholder="Enter size (px)"
             min="1"
             max="100"
           />
-          <button
-            id="translation-text-size-input-btn"
-            class="btn btn-secondary"
-          >
-            set
-          </button>
+          <button id="translation-text-size-input-btn">SET</button>
         </div>
 
         <div class="input-group">
-          <label class="input-label popup-title">source text size</label>
+          <label>SOURCE TEXT SIZE</label>
           <input
             type="number"
             id="translate-source-size-input"
-            class="styled-input"
-            placeholder="enter number(px)"
+            placeholder="Enter size (px)"
             min="1"
             max="100"
           />
-          <button
-            id="translate-source-size-input-btn"
-            class="btn btn-secondary"
-          >
-            set
-          </button>
+          <button id="translate-source-size-input-btn">SET</button>
+        </div>
+
+        <div class="input-group">
+          <label>BUTTON POSITION</label>
+          <div class="switch-container">
+            <label class="switch">
+              <input type="checkbox" id="buttonsPositionToggle" />
+              <span class="slider round"></span>
+            </label>
+            <span id="positionLabel">TOGGLE POSITION</span>
+          </div>
         </div>
       </div>
-      <span class="popup-title">Button position</span>
-      <div class="switch-container">
-        <label class="switch">
-          <input type="checkbox" id="buttonsPositionToggle" />
-          <span class="slider round"></span>
-        </label>
-        <span id="positionLabel">buttons position</span>
-      </div>
+      <header>
+        <div class="header-content">
+          <div class="top-bar">
+            <span>Rapid translation of small paragraphs</span>
+            <span>Chrome Extension</span>
+            <span>v1.0.0 (Beta)</span>
+          </div>
+          <div class="header-logo-container">
+            <div class="logo">
+              <img
+                src="../logo/logo-green.svg"
+                alt="Logo"
+                style="width: 100%; height: 100%"
+              />
+            </div>
+
+            <h1>Fluent Translate</h1>
+          </div>
+
+          <div class="feature-block">Read Smarter, Learn Faster</div>
+          <div class="info-text">
+            Designed for fast-paced readers and language learners.
+            <ul>
+              <li>Works on most websites</li>
+              <li>No sign-up required — secure and private</li>
+              <li>Smart dual-language logic for seamless switching</li>
+              <li>Powered by Google Cloud Translation API</li>
+              <li>Simple and elegant UI — no distractions</li>
+            </ul>
+          </div>
+        </div>
+        <div class="circle-badge">Free To use</div>
+        <a href="#" style="color: #00ff4c">How to use Fluent translate</a>
+      </header>
     </div>
     <script src="./popup.js"></script>
     <script src="../scripts/content.js"></script>
