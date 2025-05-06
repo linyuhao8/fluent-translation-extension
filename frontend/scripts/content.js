@@ -730,7 +730,7 @@
     // 創建來源標題
     const sourceTitle = document.createElement("p");
     sourceTitle.classList.add("translate-source-title");
-    sourceTitle.textContent = "Source";
+    sourceTitle.textContent = `Source: ${currentSourceLanguage}`;
 
     // 創建來源文字
     const source = document.createElement("div");
@@ -740,7 +740,7 @@
     // 創建翻譯標題
     const translateTitle = document.createElement("p");
     translateTitle.classList.add("translate-text-title");
-    translateTitle.textContent = "translated";
+    translateTitle.textContent = `Translated: ${translatedCode}`;
 
     // 創建翻譯文字
     const text = document.createElement("div");
