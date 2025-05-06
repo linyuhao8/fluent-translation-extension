@@ -714,7 +714,7 @@
 
     const headerSpan = document.createElement("span");
     headerSpan.classList.add("translation-header-span");
-    headerSpan.textContent = "Alt+T or Right click";
+    headerSpan.textContent = "Alt(Option)+T or Right click";
 
     headerDiv.appendChild(headerTitle);
     headerDiv.appendChild(headerSpan);

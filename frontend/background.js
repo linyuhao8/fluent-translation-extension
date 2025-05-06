@@ -1,13 +1,16 @@
 // ✅ ES module 格式
 chrome.runtime.onInstalled.addListener((details) => {
+  // 建立右鍵選單
   chrome.contextMenus.create({
     id: "translate",
-    title: "Fluent Translate: Alt+T or RightClick+T",
+    title: "Fluent Translate: Alt(option)+T or Right Click + T",
     contexts: ["selection"],
   });
+
+  // 安裝後打開歡迎頁
   if (details.reason === "install") {
     chrome.tabs.create({
-      url: chrome.runtime.getURL("welcome.html"), // 打開一個歡迎頁面
+      url: "https://linyuhao8.github.io/fluent-quick-translation-extension/",
     });
   }
 });
@@ -40,7 +43,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
     chrome.tabs.create({
-      url: "welcome-en.html", 
+      url: "welcome-en.html",
     });
   }
 });
