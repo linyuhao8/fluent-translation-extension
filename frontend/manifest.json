@@ -2,7 +2,8 @@
   "manifest_version": 3,
   "name": "Fluent Translate – Read Smarter, Learn Faster",
   "version": "1.0",
-  "description": "Fluent Translate is a lightweight yet powerful Chrome extension that instantly translates selected text and seamlessly inserts the translation into the webpage without disrupting the layout. With intelligent design and customizable controls, it enhances your reading fluency. Whether you're learning a new language or reading for everyday purposes, its smart interface and user-friendly features help you easily understand every part of the content.",
+
+  "description": "Fluent Translate lets you use hotkeys to instantly insert translations and read aloud selected text without breaking focus.",
   "permissions": ["tabs", "activeTab", "contextMenus", "storage", "scripting"],
   "host_permissions": ["<all_urls>"],
   "icons": {
