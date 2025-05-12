@@ -10,7 +10,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   // 安裝後打開歡迎頁
   if (details.reason === "install") {
     chrome.tabs.create({
-      url: "https://linyuhao8.github.io/fluent-quick-translation-extension/",
+      url: "https://linyuhao8.github.io/fluent-translation-extension/",
     });
   }
 });
@@ -35,15 +35,6 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         // 若已注入，直接發送翻譯訊息
         chrome.tabs.sendMessage(tab.id, { action: "TRANSLATE_SELECTION" });
       }
-    });
-  }
-});
-
-// background.js 或 background service worker
-chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === "install") {
-    chrome.tabs.create({
-      url: "welcome-en.html",
     });
   }
 });
