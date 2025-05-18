@@ -73,6 +73,15 @@ h1 {
   font-family: "Archivo Black", sans-serif;
 }
 
+.d-btn {
+  margin-top: 10px;
+  padding: 5px 15px;
+  background-color: var(--accent-color);
+  border: none;
+  color: #000;
+  font-weight: bold;
+}
+
 .feature-block {
   background-color: var(--accent-color);
   padding: 10px 20px;

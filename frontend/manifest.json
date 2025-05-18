@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Fluent Translate – Read Smarter, Learn Faster",
-  "version": "1.0",
+  "version": "1.01",
   "description": "Fluent Translate lets you use hotkeys to instantly insert translations and read aloud selected text without breaking focus.",
   "permissions": ["activeTab", "contextMenus", "storage", "scripting"],
   "host_permissions": [],
