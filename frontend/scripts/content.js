@@ -261,28 +261,18 @@
   // API
   class TranslatorApi {
     constructor() {}
-    //google translate api
-    async freeGoogleTranslate(text, from = "en", to = "zh-TW") {
-      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(
-        text
-      )}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      return data[0].map((part) => part[0]).join("");
-    }
-
     async translateText(text, from = "en", to = "zh-TW") {
+      const testurl = "http://localhost:3000/api/translate";
+      const url =
+        "https://fluent-quick-translation-extension.onrender.com/api/translate";
       try {
-        const response = await fetch(
-          "https://fluent-quick-translation-extension.onrender.com/api/translate",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
-          }
-        );
+        const response = await fetch(testurl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
+        });
 
         if (!response.ok) {
           console.log(`HTTP error! status: ${response.status}`);
@@ -493,10 +483,6 @@
             // Set source and target languages
             currentSourceLanguage = priority[0].code;
             currentTargetLanguage = priority[1].code;
-
-            console.log("Detected language:", detectionResult.languageCode);
-            console.log("Source language:", currentSourceLanguage);
-            console.log("Target language:", currentTargetLanguage);
 
             // Proceed with translation or other actions here
             processSelectedText(

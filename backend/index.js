@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const { Translate } = require("@google-cloud/translate").v2;
 const os = require("os");
-
+const translatorApi = require("./utils/translatorApi");
 // 載入 .env
 dotenv.config();
 
@@ -71,15 +71,19 @@ const translate = new Translate({
 const MAX_TEXT_LENGTH = 1000;
 
 app.post("/api/translate", async (req, res) => {
-  const { text, targetLang = "zh-TW" } = req.body;
-  console.log(text, targetLang);
+  const { text, sourceLang, targetLang = "zh-TW" } = req.body;
+  console.log(text, sourceLang, targetLang);
   if (!text) return res.status(400).json({ error: "Text is required." });
   if (text.length > MAX_TEXT_LENGTH) {
     return res.status(400).json({ error: "Text too long." });
   }
 
   try {
-    const [translation] = await translate.translate(text, targetLang);
+    const translation = await translatorApi.freeGoogleTranslate(
+      text,
+      sourceLang,
+      targetLang
+    );
     res.json({ translatedText: translation });
   } catch (error) {
     console.log("Translation error:", error);
