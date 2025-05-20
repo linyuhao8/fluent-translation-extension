@@ -2,7 +2,7 @@ class TranslatorApi {
   constructor() {}
   //google translate api
   async freeGoogleTranslate(text, from = "en", to = "zh-TW") {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(
+    const url = `http://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(
       text
     )}`;
     const res = await fetch(url);

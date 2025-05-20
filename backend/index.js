@@ -79,11 +79,12 @@ app.post("/api/translate", async (req, res) => {
   }
 
   try {
-    const translation = await translatorApi.freeGoogleTranslate(
-      text,
-      sourceLang,
-      targetLang
-    );
+    // const translation = await translatorApi.freeGoogleTranslate(
+    //   text,
+    //   sourceLang,
+    //   targetLang
+    // );
+    const [translate] = await translatorApi.translateText(text, targetLang);
     res.json({ translatedText: translation });
   } catch (error) {
     console.log("Translation error:", error);
