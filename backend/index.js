@@ -8,6 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // 限制請求次數
+app.set("trust proxy", true);
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,
