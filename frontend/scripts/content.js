@@ -262,17 +262,16 @@
   class TranslatorApi {
     constructor() {}
     async translateText(text, from = "en", to = "zh-TW") {
+      const url =
+        "https://fluent-translation-extension-718660780067.us-central1.run.app/api/translate";
       try {
-        const response = await fetch(
-          "https://fluent-quick-translation-extension.onrender.com/api/translate",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
-          }
-        );
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text, sourceLang: from, targetLang: to }),
+        });
 
         if (!response.ok) {
           console.log(`HTTP error! status: ${response.status}`);
