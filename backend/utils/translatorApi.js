@@ -38,12 +38,12 @@ class TranslatorApi {
     }
 
     // 初始化 Google Translate client
-    const translationClient = new Translate({ keyFilename: tempKeyPath });
+    this.translationClient = new Translate({ keyFilename: tempKeyPath });
   }
   // 使用 Google Cloud Translation API
   async translateWithGoogleCloud(text, from = "en", to = "zh-TW") {
     try {
-      const [translation] = await translationClient.translate(text, {
+      const [translation] = await this.translationClient.translate(text, {
         from,
         to,
       });
