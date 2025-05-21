@@ -43,7 +43,7 @@ class TranslatorApi {
   // 使用 Google Cloud Translation API
   async translateWithGoogleCloud(text, from = "en", to = "zh-TW") {
     try {
-      const [translation] = await this.translationClient.translate(text, {
+      const [translation] = await translationClient.translate(text, {
         from,
         to,
       });
