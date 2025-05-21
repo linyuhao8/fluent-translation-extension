@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { Translate } = require("@google-cloud/translate").v2;
 const os = require("os");
+const dotenv = require("dotenv");
 // 載入 .env
 dotenv.config();
 
