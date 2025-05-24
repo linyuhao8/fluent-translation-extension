@@ -33,28 +33,24 @@ app.use((req, res, next) => {
 const MAX_TEXT_LENGTH = 1000;
 
 app.post("/api/translate", async (req, res) => {
-  const { text, sourceLang, targetLang = "zh-TW" } = req.body;
+  const { text, sourceLang = "en", targetLang = "zh-TW" } = req.body;
   console.log(text, sourceLang, targetLang);
+
   if (!text) return res.status(400).json({ error: "Text is required." });
   if (text.length > MAX_TEXT_LENGTH) {
     return res.status(400).json({ error: "Text too long." });
   }
 
   try {
-    // const translation = await translatorApi.freeGoogleTranslate(
-    //   text,
-    //   sourceLang,
-    //   targetLang
-    // );
     const result = await translatorApi.translateWithGoogleCloud(
       text,
+      sourceLang,
       targetLang
     );
     res.json({ translatedText: result });
   } catch (error) {
-    console.log("Translation error:", error);
-    const errorMessage = error.message || "Unknown error";
-    res.status(500).json({ error: errorMessage });
+    console.error("Translation error:", error);
+    res.status(500).json({ error: error.message || "Unknown error" });
   }
 });
 
